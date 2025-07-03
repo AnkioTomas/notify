@@ -5,6 +5,7 @@ namespace app\controller\index;
 use app\database\dao\ChannelDao;
 use app\database\dao\NotificationDao;
 use app\database\model\ChannelModel;
+use app\database\model\NotificationModel;
 use app\utils\UserToken;
 use nova\framework\cache\Cache;
 use nova\framework\http\Response;
@@ -45,35 +46,21 @@ class Main extends Controller
 
         $channels = ChannelDao::getInstance()->getAll();
 
-        $mode = $this->request->get("mode","poll");
-
-        //流式输出
-
-        if($mode == "poll"){
-            return Response::asSSE(function ($cb) use ($channels){
-                /**
-                 * @var $channel ChannelModel
-                 */
-                foreach ($channels as $channel) {
-                    $data =  NotificationDao::getInstance($channel->channel)->getUnread();
-                    if(empty($data)){
-                        continue;
-                    }
-                    $cb($data,"notify");
-                }
-            });
-        }
+        $since_ts = $this->request->get("since_ts",time() - 24*60*60); //只拉取一天的通知
 
         $notifications = [];
         /**
          * @var $channel ChannelModel
          */
         foreach ($channels as $channel) {
-            $data =  NotificationDao::getInstance($channel->channel)->getUnread();
+            $data =  NotificationDao::getInstance($channel->channel)->getUnread($since_ts);
             if(empty($data)){
                 continue;
             }
             $notifications[$channel->channel] = $data;
+            /**
+             * @var $notification NotificationModel
+             */
         }
         return Response::asJson([
             "code"=>200,

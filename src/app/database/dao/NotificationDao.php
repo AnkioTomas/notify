@@ -7,9 +7,10 @@ use nova\plugin\orm\object\Dao;
 
 class NotificationDao extends Dao
 {
-    function getUnread(): array
+    function getUnread($since_ts): array
     {
-        return $this->select()->where(["is_read" => false])->commit();
+        return $this->select()->where(["is_read" => false, "t > $since_ts"])->commit();
+
     }
 
     function post($title,$content): void
