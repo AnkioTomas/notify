@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d895030f-715a-4362-968d-c476c5244bb0" name="ssh" url="http://notify.ankio.net">
+        <fileTransfer rootFolder="/www/1panel/www/sites/notify.ankio.net/index" accessType="SFTP" host="149.104.27.145" port="22" sshConfigId="d4d56bc6-ba86-400b-bcfb-878ae29d9e3d" sshConfig="root@149.104.27.145:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
