@@ -1,22 +1,60 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ */
+
 namespace app;
 
 use nova\framework\App;
+use nova\framework\event\EventManager;
+use nova\framework\exception\AppExitException;
+use nova\framework\http\Response;
+
+use function nova\framework\route;
+
 use nova\framework\route\Route;
+
+use const ROOT_PATH;
 
 class Application extends App
 {
-    protected function onFrameworkStart(): void
+    public function routeStatic(): void
     {
-        parent::onFrameworkStart();
+        EventManager::addListener("response.static.after", function ($event, $file) {
+            $name = str_replace(ROOT_PATH . '/app', '', $file);
+            if (!str_ends_with($name, ".js")) {
+                return;
+            }
+            echo <<<EOF
+;if(!window.novaFiles){window.novaFiles = {};}
+window.novaFiles['$name'] = true;
+EOF;
 
+        });
+        EventManager::addListener("route.before", function ($event, &$uri) {
+            if (str_starts_with($uri, "/static/")) {
+                $file = substr($uri, 8);
+                $file = str_replace("..", "", $file);
+                throw new AppExitException(Response::asStatic(ROOT_PATH.'/app/static/'.$file), "Send static file");
+            }
+        });
+    }
+
+    public function onFrameworkStart(): void
+    {
+        $this->routeStatic();
         Route::getInstance()
             // 发布消息通知
-            ->post("/{channel}_{token}",\nova\framework\route("index","main","publish"))
-            ->get("/subscribe/{token}",\nova\framework\route("index","main","subscribe"))
-            ->get("/read/{channel}/{id}/{token}",\nova\framework\route("index","main","read"))
-            ;
-
+            ->post("/{channel}_{token}", route("index","main","publish"))
+            ->get("/subscribe/{token}", route("index","main","subscribe"))
+            ->get("/read/{channel}/{id}/{token}", route("index","main","read"))
+        ;
     }
 }
