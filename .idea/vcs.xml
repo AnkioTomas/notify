@@ -7,7 +7,9 @@
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/avatar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/captcha" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/cookie" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/nova/plugin/device" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/http" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/nova/plugin/ip" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/login" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/minify" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/orm" vcs="Git" />

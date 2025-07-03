@@ -28,3 +28,9 @@
 [submodule "src/nova/plugin/cookie"]
 	path = src/nova/plugin/cookie
 	url = https://github.com/NovaPHPOrg/nova-cookie-session
+[submodule "src/nova/plugin/ip"]
+	path = src/nova/plugin/ip
+	url = https://github.com/NovaPHPOrg/nova-ip
+[submodule "src/nova/plugin/device"]
+	path = src/nova/plugin/device
+	url = https://github.com/NovaPHPOrg/nova-device
