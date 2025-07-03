@@ -5,6 +5,7 @@ namespace app\controller\index;
 use app\database\dao\ChannelDao;
 use app\database\dao\NotificationDao;
 use app\database\model\ChannelModel;
+use app\utils\UserToken;
 use nova\framework\cache\Cache;
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
@@ -40,13 +41,7 @@ class Main extends Controller
     function subscribe($token): Response
     {
 
-        $cache = new Cache();
-        if($cache->get("token")!=$token){
-            return Response::asJson([
-                "code"=>403,
-                "msg" => "you are not authorized"
-            ],403);
-        };
+        (new UserToken())->checkToken($token);
 
         $channels = ChannelDao::getInstance()->getAll();
 
@@ -88,13 +83,8 @@ class Main extends Controller
 
     function read($channel,$id,$token): Response
     {
-        $cache = new Cache();
-        if($cache->get("token")!=$token){
-            return Response::asJson([
-                "code"=>403,
-                "msg" => "you are not authorized"
-            ],403);
-        };
+        (new UserToken())->checkToken($token);
+
         $channelModel = ChannelDao::getInstance()->find(null,['channel'=>$channel]);
         if (empty($channelModel)) {
             return Response::asJson([
