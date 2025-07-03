@@ -49,6 +49,26 @@ class Main extends Controller
         };
 
         $channels = ChannelDao::getInstance()->getAll();
+
+        $mode = $this->request->get("mode","poll");
+
+        //流式输出
+
+        if($mode == "poll"){
+            return Response::asSSE(function ($cb) use ($channels){
+                /**
+                 * @var $channel ChannelModel
+                 */
+                foreach ($channels as $channel) {
+                    $data =  NotificationDao::getInstance($channel->channel)->getUnread();
+                    if(empty($data)){
+                        continue;
+                    }
+                    $cb($data,"notify");
+                }
+            });
+        }
+
         $notifications = [];
         /**
          * @var $channel ChannelModel

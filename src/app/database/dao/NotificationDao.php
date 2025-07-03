@@ -2,7 +2,6 @@
 
 namespace app\database\dao;
 
-use app\database\model\ChannelModel;
 use app\database\model\NotificationModel;
 use nova\plugin\orm\object\Dao;
 
@@ -13,12 +12,13 @@ class NotificationDao extends Dao
         return $this->select()->where(["is_read" => false])->commit();
     }
 
-    function post($title,$content)
+    function post($title,$content): void
     {
         $model = new NotificationModel();
         $model->title = $title;
         $model->content = $content;
         $model->is_read = false;
         $model->t = time();
+        $this->insertModel($model);
     }
 }

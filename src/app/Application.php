@@ -7,7 +7,7 @@ use nova\framework\route\Route;
 
 class Application extends App
 {
-    protected function onFrameworkStart()
+    protected function onFrameworkStart(): void
     {
         parent::onFrameworkStart();
 
