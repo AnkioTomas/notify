@@ -3,6 +3,7 @@
 namespace app\utils;
 
 use nova\framework\cache\Cache;
+use nova\framework\core\Context;
 use nova\framework\exception\AppExitException;
 use nova\framework\http\Response;
 
@@ -11,7 +12,7 @@ class UserToken
     private Cache $cache;
     public function __construct()
     {
-        $this->cache = new Cache();
+        $this->cache = Context::instance()->cache;
     }
 
     /**
@@ -26,7 +27,7 @@ class UserToken
             ]));
         }
 
-        $this->cache = new Cache();
+        $this->cache =Context::instance()->cache;
         $t = $this->cache->get("token");
         if(empty($t)){
             $t = $this->createToken();

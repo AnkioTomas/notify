@@ -34,3 +34,12 @@
 [submodule "src/nova/plugin/device"]
 	path = src/nova/plugin/device
 	url = https://github.com/NovaPHPOrg/nova-device
+[submodule "src/app/static/components/theme"]
+	path = src/app/static/components/theme
+	url = https://git.ankio.icu/nova-ui/nova-theme
+[submodule "src/app/static/components/language"]
+	path = src/app/static/components/language
+	url = https://git.ankio.icu/nova-ui/nova-language
+[submodule "src/app/static/components/captcha"]
+	path = src/app/static/components/captcha
+	url = https://git.ankio.icu/nova-ui/nova-captcha
