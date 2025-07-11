@@ -33,7 +33,9 @@ class Main extends Controller
 
         $content = $this->request->post('content');
 
-        NotificationDao::getInstance($channelModel->channel)->post($title, $content);
+        $link = $this->request->post("link");
+
+        NotificationDao::getInstance($channelModel->channel)->post($title, $content, $link);
 
         return Response::asJson([
             "code" => 200,
