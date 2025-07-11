@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\database\dao;
 
 use app\database\model\NotificationModel;
@@ -7,12 +9,12 @@ use nova\plugin\orm\object\Dao;
 
 class NotificationDao extends Dao
 {
-    function getUnread($since_ts): array
+    public function getUnread($since_ts): array
     {
         return $this->select()->where(["is_read" => false, "t > $since_ts"])->commit();
     }
 
-    function post($title,$content,$link): void
+    public function post($title, $content, $link): void
     {
         $model = new NotificationModel();
         $model->title = $title;
@@ -24,8 +26,8 @@ class NotificationDao extends Dao
         $this->deleteTimeOut();
     }
 
-    function deleteTimeOut(): void
+    public function deleteTimeOut(): void
     {
-        $this->delete()->where(["t < ".(time()-3600*365)])->commit();
+        $this->delete()->where(["t < ".(time() - 3600 * 365)])->commit();
     }
 }

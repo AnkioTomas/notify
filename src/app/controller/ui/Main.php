@@ -1,10 +1,9 @@
 <?php
 
-namespace app\controller\ui;
+declare(strict_types=1);
 
-use app\controller\ui\BaseController;
+namespace app\controller\ui;
 
 class Main extends BaseController
 {
-
 }

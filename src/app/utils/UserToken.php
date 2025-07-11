@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\utils;
 
 use nova\framework\cache\Cache;
@@ -20,21 +22,21 @@ class UserToken
      */
     public function checkToken($token)
     {
-        if(empty($token)){
+        if (empty($token)) {
             throw new AppExitException(Response::asJson([
                 "code" => 403,
                 "message" => "Invalid Token"
             ]));
         }
 
-        $this->cache =Context::instance()->cache;
+        $this->cache = Context::instance()->cache;
         $t = $this->cache->get("token");
-        if(empty($t)){
+        if (empty($t)) {
             $t = $this->createToken();
             $this->cache->set("token", $t);
         }
 
-        if($token != $t){
+        if ($token != $t) {
             throw new AppExitException(Response::asJson([
                 "code" => 403,
                 "message" => "Invalid Token"
@@ -47,8 +49,8 @@ class UserToken
         $this->cache->set("token", $this->createToken());
     }
 
-    public function createToken():string
+    public function createToken(): string
     {
-        return substr(uniqid(),0,6);
+        return substr(uniqid(), 0, 6);
     }
 }

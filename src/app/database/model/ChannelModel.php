@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\database\model;
 
 use nova\plugin\orm\object\Model;

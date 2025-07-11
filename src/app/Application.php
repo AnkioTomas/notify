@@ -52,13 +52,13 @@ EOF;
         $this->routeStatic();
         Route::getInstance()
             // 发布消息通知
-            ->post("/publish/{channel}_{token}", route("index","main","publish"))
-            ->get("/subscribe/{token}", route("index","main","subscribe"))
-            ->get("/read/{channel}/{id}/{token}", route("index","main","read"))
+            ->post("/publish/{channel}_{token}", route("index", "main", "publish"))
+            ->get("/subscribe/{token}", route("index", "main", "subscribe"))
+            ->get("/read/{channel}/{id}/{token}", route("index", "main", "read"))
 
             //UI这一块
-            ->get("/", route("ui","main","index")) //后台访问页面
-            ->post("/", route("index","main","publish"))
+            ->get("/", route("ui", "main", "index")) //后台访问页面
+            ->post("/", route("index", "main", "publish"))
 
         ;
     }
