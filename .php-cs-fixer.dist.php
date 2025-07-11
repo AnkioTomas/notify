@@ -25,6 +25,7 @@ return $config
         'no_unused_imports' => true,
         'visibility_required' => ['elements' => ['method', 'property']],  // 正确配置
     ])
+    ->setLineEnding(PHP_EOL)
     ->setFinder(PhpCsFixer\Finder::create()
         ->in(__DIR__) // 扫描当前目录
     );
