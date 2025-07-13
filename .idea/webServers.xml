@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="106f312b-9820-4d34-b512-90b6839d6714" name="local">
+        <fileTransfer rootFolder="/opt/1panel/www/sites/notify.ankio.icu/index" accessType="SFTP" host="192.168.100.200" port="22" sshConfigId="6b05c101-c727-4b16-998c-3ea466714920" sshConfig="ankio@192.168.100.200:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

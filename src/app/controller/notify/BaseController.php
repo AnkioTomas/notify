@@ -15,10 +15,10 @@ class BaseController extends Controller
     protected ?UserModel $userModel;
     public function init(): ?Response
     {
-        Session::getInstance()->start(365 * 24 * 60 * 60, "ankio_notify");
+        Session::getInstance()->start();
         $this->userModel = LoginManager::getInstance()->checkLogin();
         if (empty($this->userModel)) {
-            $this->redirectTo(LoginManager::getInstance()->redirectLogin());
+            return $this->redirectTo(LoginManager::getInstance()->redirectLogin());
         }
         return null;
 

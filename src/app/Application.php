@@ -57,9 +57,11 @@ EOF;
             ->get("/read/{channel}/{id}/{token}", route("index", "main", "read"))
 
             //UI这一块
-            ->get("/", route("ui", "main", "index")) //后台访问页面
-            ->post("/", route("index", "main", "publish"))
-
+            ->get("/", route("notify", "main", "index")) //后台访问页面
+            ->get("/manage", route("manager", "main", "index")) //后台访问页面
+        ->get("/notification", route("manager", "main", "notification")) //后台访问页面
         ;
     }
+
+    const string DEFAULT_LAYOUT = ROOT_PATH.DS."app".DS."view".DS."manager".DS."layout";
 }

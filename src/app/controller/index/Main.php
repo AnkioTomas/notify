@@ -14,6 +14,7 @@ use nova\framework\route\Controller;
 
 class Main extends Controller
 {
+
     public function publish($channel, $token): Response
     {
         /**

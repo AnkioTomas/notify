@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="ssh" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="local" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
+      <paths name="local">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$/src" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="ssh">
         <serverdata>
           <mappings>

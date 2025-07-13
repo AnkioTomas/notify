@@ -43,3 +43,6 @@
 [submodule "src/app/static/components/captcha"]
 	path = src/app/static/components/captcha
 	url = https://git.ankio.icu/nova-ui/nova-captcha
+[submodule "src/app/static/components/pjax"]
+	path = src/app/static/components/pjax
+	url = https://git.ankio.icu/nova-ui/nova-pjax
