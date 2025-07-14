@@ -9,33 +9,6 @@
     mdui-card{
         width: 100%;
     }
-    .copyable {
-        position: relative;
-        display: inline-block;          /* 让伪元素可绝对定位 */
-        cursor: pointer;
-        user-select: none;              /* 可选：防止选中文本时闪烁 */
-        height: 100%;
-    }
-
-    /* 半透明遮罩 */
-    .copyable::before {
-        content: '';
-        position: absolute;
-        inset: 0;                       /* 铺满父容器 */
-        background: rgba(0, 0, 0, 0.1);
-        opacity: 0;
-        transition: opacity .2s ease;
-        pointer-events: none;           /* 避免拦截点击 */
-    }
-
-
-    /* 悬浮/激活时显示 */
-    .copyable:hover::before,
-    .copyable:hover::after,
-    .copyable:active::before,
-    .copyable:active::after {
-        opacity: 1;
-    }
 
 </style>
 

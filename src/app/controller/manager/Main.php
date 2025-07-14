@@ -40,6 +40,12 @@ class Main extends BaseController
                     "pjax" => true
                 ],
                 [
+                    "title" => "订阅通知",
+                    "icon" => "rss_feed",
+                    "url" => "/sub",
+                    "pjax" => true
+                ],
+                [
                     "title" => "账户安全",
                     "icon" => "person",
                     "url" => "/center",
@@ -70,6 +76,10 @@ class Main extends BaseController
         return $this->viewResponse->asTpl(PwdLoginManager::CENTER_TPL, [
             "username" => $this->userModel->username,
         ]);
+    }
+    public function sub(): Response
+    {
+        return $this->viewResponse->asTpl();
     }
 
     public function logout(): Response

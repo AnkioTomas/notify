@@ -61,7 +61,9 @@ EOF;
             ->get("/manage", route("manager", "main", "index"))
             ->get("/center", route("manager", "main", "center"))
             ->get("/channel", route("manager", "main", "channel"))
-
+            ->get("/sub", route("manager", "main", "sub"))
+            ->get("/sub/get", route("manager", "sub", "get"))
+            ->get("/sub/reset", route("manager", "sub", "reset"))
             ->get("/channel/list", route("manager", "channel", "list"))
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))

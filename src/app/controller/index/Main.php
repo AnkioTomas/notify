@@ -49,13 +49,19 @@ class Main extends Controller
 
         $channels = ChannelDao::getInstance()->getAll();
 
-        $since_ts = $this->request->get("since_ts", time() - 24 * 60 * 60); //只拉取一天的通知
+        $before  = time() - 24 * 60 * 60;
+
+        $since_ts = $this->request->get("since_ts", $before); //只拉取一天的通知
+
+        if ($since_ts < $before) {
+            $since_ts = $before;
+        }
 
         $notifications = [];
         /**
          * @var $channel ChannelModel
          */
-        foreach ($channels as $channel) {
+        foreach ($channels['data'] as $channel) {
             $data =  NotificationDao::getInstance($channel->channel)->getUnread($since_ts);
             if (empty($data)) {
                 continue;
