@@ -62,7 +62,7 @@ class Main extends Controller
          * @var $channel ChannelModel
          */
         foreach ($channels['data'] as $channel) {
-            $data =  NotificationDao::getInstance($channel->channel)->getUnread($since_ts);
+            $data =  NotificationDao::getInstance($channel->channel)->get($since_ts);
             if (empty($data)) {
                 continue;
             }

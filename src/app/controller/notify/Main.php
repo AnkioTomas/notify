@@ -11,12 +11,9 @@ class Main extends BaseController
 {
     protected ViewResponse $viewResponse;
 
-    public function init(): ?Response
+    public function index(): ?Response
     {
-        $ret = parent::init();
-        if (!empty($ret)) {
-            return $ret;
-        }
+
         $this->viewResponse = new ViewResponse();
 
         $this->viewResponse->init(
@@ -28,15 +25,7 @@ class Main extends BaseController
             ]
         );
 
-        if (!$this->request->isPjax()) {
-            return $this->viewResponse->asTpl("layout");
-        }
-
-        return null;
+        return $this->viewResponse->asTpl("layout");
     }
 
-    public function index(): Response
-    {
-        return Response::asText();
-    }
 }
