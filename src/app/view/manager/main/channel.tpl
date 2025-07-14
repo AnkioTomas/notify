@@ -42,7 +42,7 @@
 <div id="container" class="container">
     <div class="row">
         <div class="col-xs12 title-large center-vertical mb-4">
-           <mdui-icon name="apps" class="refresh mr-2"></mdui-icon>
+           <mdui-icon name="notifications" class="refresh mr-2"></mdui-icon>
             <span > 通知渠道</span>
         </div>
         <div class="col-xs12">
@@ -61,7 +61,7 @@
         <form class="row col-space16 " >
             <mdui-text-field name="id" type="hidden"></mdui-text-field>
             <div class="col-md12">
-                <mdui-text-field label="渠道名称" name="name" variant="outlined" required></mdui-text-field>
+                <mdui-text-field label="渠道名称" name="channel" variant="outlined" required></mdui-text-field>
             </div>
         </form>
     </mdui-dialog-form >
@@ -69,7 +69,7 @@
 
 </div>
 
-<script id="script" src="/static/js/app/list.js"></script>
+<script id="script" src="/static/js/channel/list.js"></script>
 
 
 

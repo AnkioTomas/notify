@@ -14,7 +14,6 @@ use nova\framework\route\Controller;
 
 class Main extends Controller
 {
-
     public function publish($channel, $token): Response
     {
         /**
@@ -30,11 +29,11 @@ class Main extends Controller
 
         // 请求参数
 
-        $title = $this->request->post('title');
+        $title = $this->request->arg('title', '');
 
-        $content = $this->request->post('content');
+        $content = $this->request->arg('content', '');
 
-        $link = $this->request->post("link");
+        $link = $this->request->arg('link', '');
 
         NotificationDao::getInstance($channelModel->channel)->post($title, $content, $link);
 

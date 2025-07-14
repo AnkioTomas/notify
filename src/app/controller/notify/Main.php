@@ -28,11 +28,15 @@ class Main extends BaseController
             ]
         );
 
-
         if (!$this->request->isPjax()) {
             return $this->viewResponse->asTpl("layout");
         }
 
         return null;
+    }
+
+    public function index(): Response
+    {
+        return Response::asText();
     }
 }

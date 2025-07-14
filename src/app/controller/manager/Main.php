@@ -36,7 +36,7 @@ class Main extends BaseController
                 [
                     "title" => "通知渠道",
                     "icon" => "notifications",
-                    "url" => "/notification",
+                    "url" => "/channel",
                     "pjax" => true
                 ],
                 [
@@ -57,10 +57,10 @@ class Main extends BaseController
 
     public function index(): Response
     {
-        return Response::asRedirect("/notification");
+        return Response::asRedirect("/channel");
     }
 
-    public function notification(): Response
+    public function channel(): Response
     {
         return $this->viewResponse->asTpl();
     }
