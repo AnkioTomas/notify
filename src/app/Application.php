@@ -67,6 +67,8 @@ EOF;
             ->get("/channel/list", route("manager", "channel", "list"))
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))
+
+            ->get("/logout", route("manager", "main", "logout"))
         ;
     }
 

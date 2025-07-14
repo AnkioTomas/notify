@@ -6,6 +6,7 @@ namespace app\controller\manager;
 
 use app\controller\notify\BaseController;
 use app\database\dao\ChannelDao;
+use app\database\dao\NotificationDao;
 use app\database\model\ChannelModel;
 use nova\framework\http\Response;
 
@@ -30,7 +31,19 @@ class Channel extends BaseController
 
     public function del(): Response
     {
+        $id =  $this->request->post("id", 0);
+        /**
+         * @var $channel ChannelModel
+         */
+        $channel = ChannelDao::getInstance()->find(null, ['id' => $id ]);
+        if (empty($channel)) {
+            return Response::asJson([
+                'code' => 404,
+                'msg' => '渠道不存在',
+            ]);
+        }
         ChannelDao::getInstance()->delete()->where(['id' => $this->request->post("id", 0)])->commit();
+        NotificationDao::getInstance($channel->channel)->dropTable();
         return Response::asJson([
             'code' => 200,
         ]);

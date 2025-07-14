@@ -86,7 +86,7 @@ window.pageOnLoad = function (loading) {
     $("#dataTable")
         .on('click', '.action-delete', function () {
             let row = database.getRow($(this).data("index"));
-            $.request.postForm("/app/del", {
+            $.request.postForm("/channel/del", {
                 id: row.id
             }, (data) => {
                 $.toaster.success("删除成功");
@@ -99,7 +99,6 @@ window.pageOnLoad = function (loading) {
         dialog.setValue(row);
     }).on('click', '.action-copy', function () {
         let row = database.getRow($(this).data("index"));
-        console.log(row,"xxxxxxxxxxxxx")
         let uri = location.origin+"/publish/"+row.channel+"_"+row.token;
         copyToClipboard(uri);
         $.toaster.success("已复制链接");
