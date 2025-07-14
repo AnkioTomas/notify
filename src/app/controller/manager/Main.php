@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\controller\manager;
@@ -6,6 +7,7 @@ namespace app\controller\manager;
 use app\controller\notify\BaseController;
 use nova\framework\http\Response;
 use nova\plugin\cookie\Session;
+use nova\plugin\login\manager\PwdLoginManager;
 use nova\plugin\tpl\ViewResponse;
 
 class Main extends BaseController
@@ -40,7 +42,7 @@ class Main extends BaseController
                 [
                     "title" => "账户安全",
                     "icon" => "person",
-                    "url" => "/login/center",
+                    "url" => "/center",
                     "pjax" => true
                 ],
             ];
@@ -58,10 +60,16 @@ class Main extends BaseController
         return Response::asRedirect("/notification");
     }
 
-
     public function notification(): Response
     {
         return $this->viewResponse->asTpl();
+    }
+
+    public function center(): Response
+    {
+        return $this->viewResponse->asTpl(PwdLoginManager::CENTER_TPL, [
+            "username" => $this->userModel->username,
+        ]);
     }
 
     public function logout(): Response

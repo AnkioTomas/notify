@@ -59,6 +59,7 @@ EOF;
             //UI这一块
             ->get("/", route("notify", "main", "index")) //后台访问页面
             ->get("/manage", route("manager", "main", "index")) //后台访问页面
+            ->get("/center", route("manager", "main", "center")) //后台访问页面
         ->get("/notification", route("manager", "main", "notification")) //后台访问页面
         ;
     }
