@@ -72,5 +72,6 @@ EOF;
         ;
     }
 
-    const string DEFAULT_LAYOUT = ROOT_PATH.DS."app".DS."view".DS."manager".DS."layout";
+    public const string SYSTEM_NAME =  "AnkioのNotify";
+
 }
