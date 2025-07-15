@@ -1,4 +1,3 @@
-
 [submodule "src/app/static/components/captcha"]
     path = src/app/static/components/captcha
     url = https://git.ankio.icu/nova-ui/nova-captcha

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\controller\manager;
 
+use app\Application;
 use app\controller\notify\BaseController;
 use nova\framework\http\Response;
 use nova\plugin\cookie\Session;
@@ -25,7 +26,7 @@ class Main extends BaseController
         $this->viewResponse->init(
             '',
             [
-                'title' => 'AnkioのNotify',
+                'title' => Application::SYSTEM_NAME,
                 'header' => $this->userModel->avatar,
                 'nickname' => $this->userModel->display_name,
             ]
