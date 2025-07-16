@@ -9,11 +9,61 @@
     <link rel="stylesheet" href="/static/css/init.css?v={$__v}">
     <style id="style">
 
-        /* “已读”卡片整体淡化 */
+        /* "已读"卡片整体淡化 */
         .opacity-60 {
             opacity: 0.6;
         }
 
+        /* 通知类型样式 */
+        .notification-card {
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .notification-success {
+            border-left-color: #4caf50;
+        }
+
+        .notification-success .notification-type-icon {
+            color: #4caf50;
+        }
+
+        .notification-warning {
+            border-left-color: #ff9800;
+        }
+
+        .notification-warning .notification-type-icon {
+            color: #ff9800;
+        }
+
+        .notification-error {
+            border-left-color: #f44336;
+        }
+
+        .notification-error .notification-type-icon {
+            color: #f44336;
+        }
+
+        .notification-default {
+            border-left-color: #2196f3;
+        }
+
+        .notification-default .notification-type-icon {
+            color: #2196f3;
+        }
+
+        /* 操作按钮样式 */
+        .notification-card .flex {
+            display: flex;
+        }
+
+        .notification-card .gap-2 {
+            gap: 8px;
+        }
+
+        .notification-card .mt-3 {
+            margin-top: 12px;
+        }
 
     </style>
 </head>

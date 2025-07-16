@@ -28,14 +28,23 @@ class Main extends Controller
         }
 
         // 请求参数
-
         $title = $this->request->arg('title', '');
+        $message = $this->request->arg('message', '');
+        $type = $this->request->arg('type', 'default');
+        $actionLeftUrl = $this->request->arg('actionLeftUrl', '');
+        $actionLeftText = $this->request->arg('actionLeftText', '');
+        $actionRightUrl = $this->request->arg('actionRightUrl', '');
+        $actionRightText = $this->request->arg('actionRightText', '');
 
-        $content = $this->request->arg('content', '');
-
-        $link = $this->request->arg('link', '');
-
-        NotificationDao::getInstance($channelModel->channel)->post($title, $content, $link);
+        NotificationDao::getInstance($channelModel->channel)->post(
+            $title, 
+            $message, 
+            $type, 
+            $actionLeftUrl, 
+            $actionLeftText, 
+            $actionRightUrl, 
+            $actionRightText
+        );
 
         return Response::asJson([
             "code" => 200,

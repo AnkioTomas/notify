@@ -26,12 +26,21 @@ $.loader([], () => {
 
     /**
      * 生成通知卡片（含可选「外链」按钮）
-     * @param {Object} item  { id, title, t, content, is_read, link }
+     * @param {Object} item  { id, title, t, message, type, is_read, actionLeftUrl, actionLeftText, actionRightUrl, actionRightText }
      * @param {String} channel 数据来源
      * @returns {jQuery}  mdui-card 节点
      */
     function createCard(item, channel) {
         const isRead = !!item.is_read;
+
+        // 根据通知类型设置样式类
+        const typeClass = item.type || 'default';
+        const typeIcon = {
+            'success': 'check_circle',
+            'warning': 'warning',
+            'error': 'error',
+            'default': 'info'
+        }[typeClass] || 'info';
 
         // 右侧按钮：未读→可点击，已读→勾灰
         const btn = isRead
@@ -40,21 +49,32 @@ $.loader([], () => {
          <mdui-icon name="done"></mdui-icon>
        </mdui-button>`;
 
-        // 可选外链按钮（左下角）
-        const linkBtn = item.link
-            ? `<mdui-button variant="text" icon
-                    href="${item.link}"
-                    target="_blank"
-                    rel="noopener"
-                    class="card-link"
-                    title="打开链接">
-         <mdui-icon name="link"></mdui-icon>
-         <span class="ml-1">查看源文</span>
-       </mdui-button>`
-            : "";
+        // 操作按钮区域
+        let actionButtons = '';
+        if (item.actionLeftText || item.actionRightText) {
+            actionButtons = '<div class="mt-3 flex gap-2">';
+            
+            if (item.actionLeftText) {
+                actionButtons += `
+                    <mdui-button variant="outlined" size="small" 
+                        ${item.actionLeftUrl ? `href="${item.actionLeftUrl}" target="_blank"` : ''}>
+                        ${item.actionLeftText}
+                    </mdui-button>`;
+            }
+            
+            if (item.actionRightText) {
+                actionButtons += `
+                    <mdui-button variant="filled" size="small" 
+                        ${item.actionRightUrl ? `href="${item.actionRightUrl}" target="_blank"` : ''}>
+                        ${item.actionRightText}
+                    </mdui-button>`;
+            }
+            
+            actionButtons += '</div>';
+        }
 
         return $(`
-    <mdui-card class="m-2 p-4 ${isRead ? 'opacity-60' : ''}"
+    <mdui-card class="m-2 p-4 ${isRead ? 'opacity-60' : ''} notification-card notification-${typeClass}"
                style="width:100%;"
                data-id="${item.id}" data-channel="${channel}">
       <!-- Flex 容器：纵向排列，Link 区域推到最底部 -->
@@ -69,10 +89,12 @@ $.loader([], () => {
                gap:4px;
                align-items:center;
              ">
-          <span class="body-large card-title"
-                style="grid-column:1; grid-row:1;">
-            ${item.title}
-          </span>
+          <div style="grid-column:1; grid-row:1; display:flex; align-items:center; gap:8px;">
+            <mdui-icon name="${typeIcon}" class="notification-type-icon"></mdui-icon>
+            <span class="body-large card-title">
+              ${item.title}
+            </span>
+          </div>
 
           <span class="body-small text-gray-500 card-time"
                 style="grid-column:1; grid-row:2;">
@@ -86,17 +108,13 @@ $.loader([], () => {
 
         <!-- 正文（可选）-->
         ${
-            item.content
-                ? `<div class="body-medium whitespace-pre-line card-content mt-3">${item.content}</div>`
+            item.message
+                ? `<div class="body-medium whitespace-pre-line card-content mt-3">${item.message}</div>`
                 : ""
         }
 
-        <!-- 外链按钮（可选）-->
-        ${
-            linkBtn
-                ? `<div class="mt-3">${linkBtn}</div>`
-                : ""
-        }
+        <!-- 操作按钮（可选）-->
+        ${actionButtons}
       </div>
     </mdui-card>
   `);
@@ -210,7 +228,7 @@ $.loader([], () => {
                 state.notifiedIds.add(key);
 
                 new Notification(`${channel} - ${item.title}`, {
-                    body : item.content || "(无内容)",
+                    body : item.message || "(无内容)",
                     icon: "/static/icons/android-chrome-192x192.png"
                 });
             });
