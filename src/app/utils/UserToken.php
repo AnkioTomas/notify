@@ -53,4 +53,14 @@ class UserToken
     {
         return substr(uniqid(), 0, 6);
     }
+
+    public function getToken(): string
+    {
+        $token = $this->cache->get("token");
+        if (empty($token)) {
+            $token = $this->createToken();
+            $this->cache->set("token", $token);
+        }
+        return $token;
+    }
 }

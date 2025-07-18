@@ -9,25 +9,31 @@ use nova\plugin\orm\object\Dao;
 
 class NotificationDao extends Dao
 {
-    public function getUnread($since_ts): array
+    public function get($since_ts): array
     {
-        return $this->select()->where(["is_read" => false, "t > $since_ts"])->commit();
+        return $this->select()->where([ "t > $since_ts"])->orderBy("id")->commit();
     }
 
-    public function post($title, $content, $link): void
+    public function post($title, $message, $type = "default", $actionLeftUrl = "", $actionLeftText = "", $actionRightUrl = "", $actionRightText = ""): void
     {
         $model = new NotificationModel();
         $model->title = $title;
-        $model->content = $content;
-        $model->link = $link;
+        $model->message = $message;
+        $model->type = $type;
+        $model->actionLeftUrl = $actionLeftUrl;
+        $model->actionLeftText = $actionLeftText;
+        $model->actionRightUrl = $actionRightUrl;
+        $model->actionRightText = $actionRightText;
         $model->is_read = false;
         $model->t = time();
         $this->insertModel($model);
-        $this->deleteTimeOut();
+        if (rand(1, 100) == 1) {
+            $this->deleteTimeOut();
+        }
     }
 
     public function deleteTimeOut(): void
     {
-        $this->delete()->where(["t < ".(time() - 3600 * 365)])->commit();
+        $this->delete()->where(["t < ".(time() - 3600 * 24 * 2)])->commit();
     }
 }

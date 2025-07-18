@@ -3,6 +3,7 @@
   <component name="SshConfigs">
     <configs>
       <sshConfig authType="PASSWORD" host="149.104.27.145" id="d4d56bc6-ba86-400b-bcfb-878ae29d9e3d" port="22" nameFormat="DESCRIPTIVE" username="root" useOpenSSHConfig="true" />
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;proxyParams&quot;:{&quot;proxyHost&quot;:&quot;&quot;,&quot;proxyPort&quot;:-1,&quot;proxyType&quot;:&quot;IDE_WIDE_PROXY&quot;}}" host="192.168.100.200" id="6b05c101-c727-4b16-998c-3ea466714920" port="22" nameFormat="DESCRIPTIVE" username="ankio" useOpenSSHConfig="true" />
     </configs>
   </component>
 </project>
