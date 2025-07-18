@@ -17,4 +17,9 @@ class NotificationModel extends Model
     public string $actionRightUrl  = ""; // 右侧操作按钮URL
     public string $actionRightText = ""; // 右侧操作按钮文本
     public int $t = 0;//发布时间
+
+    public function getNoEscape(): array
+    {
+        return ["message"];
+    }
 }
