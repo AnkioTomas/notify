@@ -17,6 +17,7 @@ use nova\framework\event\EventManager;
 use nova\framework\exception\AppExitException;
 use nova\framework\http\Response;
 
+use function nova\framework\config;
 use function nova\framework\route;
 
 use nova\framework\route\Route;
@@ -36,6 +37,15 @@ class Application extends App
 ;if(!window.novaFiles){window.novaFiles = {};}
 window.novaFiles['$name'] = true;
 EOF;
+
+            if(str_ends_with($name, "bootloader.js")) {
+                $version = config("version");
+                $debug = config("debug") ? "true":"false";
+                echo <<<EOF
+window.debug = $debug;
+window.version = '$version';
+EOF;
+            }
 
         });
         EventManager::addListener("route.before", function ($event, &$uri) {
