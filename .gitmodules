@@ -1,12 +1,3 @@
-[submodule "src/app/static/components/captcha"]
-    path = src/app/static/components/captcha
-    url = https://git.ankio.icu/nova-ui/nova-captcha
-[submodule "src/app/static/components/language"]
-    path = src/app/static/components/language
-    url = https://git.ankio.icu/nova-ui/nova-language
-[submodule "src/app/static/components/theme"]
-    path = src/app/static/components/theme
-    url = https://git.ankio.icu/nova-ui/nova-theme
 [submodule "src/app/static/framework"]
     path = src/app/static/framework
     url = https://git.ankio.icu/nova-ui/framework
@@ -22,15 +13,9 @@
 [submodule "src/nova/plugin/cookie"]
     path = src/nova/plugin/cookie
     url = https://github.com/NovaPHPOrg/nova-cookie-session
-[submodule "src/nova/plugin/device"]
-    path = src/nova/plugin/device
-    url = https://github.com/NovaPHPOrg/nova-device
 [submodule "src/nova/plugin/http"]
     path = src/nova/plugin/http
     url = https://github.com/NovaPHPOrg/nova-http
-[submodule "src/nova/plugin/ip"]
-    path = src/nova/plugin/ip
-    url = https://github.com/NovaPHPOrg/nova-ip
 [submodule "src/nova/plugin/login"]
     path = src/nova/plugin/login
     url = https://github.com/NovaPHPOrg/nova-login
@@ -43,12 +28,21 @@
 [submodule "src/nova/plugin/tpl"]
     path = src/nova/plugin/tpl
     url = https://github.com/NovaPHPOrg/nova-tpl
-[submodule "src/app/static/components/dataTable"]
-    path = src/app/static/components/dataTable
-    url = https://git.ankio.icu/nova-ui/nova-dataTable
+[submodule "src/nova/plugin/ip"]
+    path = src/nova/plugin/ip
+    url = https://github.com/NovaPHPOrg/nova-ip
+[submodule "src/app/static/components/language"]
+    path = src/app/static/components/language
+    url = https://git.ankio.icu/nova-ui/nova-language
+[submodule "src/app/static/components/captcha"]
+    path = src/app/static/components/captcha
+    url = https://git.ankio.icu/nova-ui/nova-captcha
+[submodule "src/nova/plugin/device"]
+    path = src/nova/plugin/device
+    url = https://github.com/NovaPHPOrg/nova-device
+[submodule "src/app/static/components/theme"]
+    path = src/app/static/components/theme
+    url = https://git.ankio.icu/nova-ui/nova-theme
 [submodule "src/app/static/components/pjax"]
     path = src/app/static/components/pjax
     url = https://git.ankio.icu/nova-ui/nova-pjax
-[submodule "src/app/static/components/formDialog"]
-    path = src/app/static/components/formDialog
-    url = https://git.ankio.icu/nova-ui/nova-formDialog

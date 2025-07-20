@@ -72,7 +72,6 @@ $.loader([], () => {
             
             actionButtons += '</div>';
         }
-
         return $(`
     <mdui-card class="m-2 p-4 ${isRead ? 'opacity-60' : ''} notification-card notification-${typeClass}"
                style="width:100%;"
@@ -363,8 +362,11 @@ $.loader([], () => {
     function pollNotifications () {
         const doPoll = u => {
             let t =  sinceTs;
-            sinceTs = Math.floor(Date.now() / 1000) - 10;
             $.request.get(u, { since_ts: t }, resp => {
+                // 只有在数据不为空时才更新时间戳
+                if (resp.data && Object.keys(resp.data).length > 0) {
+                    sinceTs = Math.floor(Date.now() / 1000) - 10;
+                }
                 mergeIncrementalData(resp.data);
                 buildUI(state.allData);
                 setTimeout(() => doPoll(u), 5000);
