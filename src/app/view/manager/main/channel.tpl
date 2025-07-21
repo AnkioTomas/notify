@@ -42,7 +42,7 @@
 
 </div>
 
-<script id="script" src="/static/js/channel/list.js"></script>
+<script id="script" src="/static/js/channel/list.js?v={$__v}"></script>
 
 
 
