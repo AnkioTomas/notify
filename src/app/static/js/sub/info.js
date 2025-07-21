@@ -10,28 +10,10 @@ window.pageOnLoad = function (loading) {
     }
 
     getLink();
-    function copyToClipboard(text) {
-        if (navigator.clipboard?.writeText) {
-            try {
-                navigator.clipboard.writeText(text);
-            } catch (_) {
-            }
-        }
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = 0;
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-            return document.execCommand('copy');
-        } finally {
-            document.body.removeChild(ta);
-        }
-    }
+
 
     $("#copyBtn").on("click",function () {
-        copyToClipboard($("#linkInput").val());
+        $.copy($("#linkInput").val());
         $.toaster.success("已复制");
     })
 

@@ -62,25 +62,6 @@ window.pageOnLoad = function (loading) {
 
     let database = initDataBase();
 
-    function copyToClipboard(text) {
-        if (navigator.clipboard?.writeText) {
-            try {
-                navigator.clipboard.writeText(text);
-            } catch (_) {
-            }
-        }
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = 0;
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-            return document.execCommand('copy');
-        } finally {
-            document.body.removeChild(ta);
-        }
-    }
 
     let dialog = document.querySelector("mdui-dialog-form");
     $("#dataTable")
@@ -90,7 +71,7 @@ window.pageOnLoad = function (loading) {
                 id: row.id
             }, (data) => {
                 $.toaster.success("删除成功");
-                database.reload();
+                database.reload({},true);
             });
 
         }).on('click', '.action-editor', function () {
@@ -100,12 +81,12 @@ window.pageOnLoad = function (loading) {
     }).on('click', '.action-copy', function () {
         let row = database.getRow($(this).data("index"));
         let uri = location.origin+"/publish/"+row.channel+"_"+row.token;
-        copyToClipboard(uri);
+        $.copy(uri);
         $.toaster.success("已复制链接");
 
     });
     $("#refresh").on("click", () => {
-        database.reload();
+        database.reload({},true);
     });
 
     $("#addApp").on("click", () => {
@@ -113,7 +94,7 @@ window.pageOnLoad = function (loading) {
     });
 
     dialog.submit("/channel/edit", (data, response) => {
-        database.reload();
+        database.reload({},true);
     })
     window.pageOnUnLoad = function () {
         database.destroy();
