@@ -9,6 +9,7 @@ use app\controller\notify\BaseController;
 use nova\framework\http\Response;
 use nova\plugin\cookie\Session;
 use nova\plugin\login\manager\PwdLoginManager;
+use nova\plugin\login\manager\SSOLoginManager;
 use nova\plugin\tpl\ViewResponse;
 
 class Main extends BaseController
@@ -48,8 +49,14 @@ class Main extends BaseController
                 ],
                 [
                     "title" => "账户安全",
-                    "icon" => "person",
-                    "url" => "/center",
+                    "url" => "/account",
+                    "icon" => "security",
+                    "pjax" => true
+                ],
+                [
+                    "title" => "统一认证登录",
+                    "url" => "/sso",
+                    "icon" => "vpn_key",
                     "pjax" => true
                 ],
             ];
@@ -72,12 +79,19 @@ class Main extends BaseController
         return $this->viewResponse->asTpl();
     }
 
-    public function center(): Response
+    public function account(): Response
     {
-        return $this->viewResponse->asTpl(PwdLoginManager::CENTER_TPL, [
+        return $this->viewResponse->asTpl(PwdLoginManager::TPL_PASSWORD, [
             "username" => $this->userModel->username,
         ]);
     }
+
+    public function sso(): Response
+    {
+        return $this->viewResponse->asTpl(SSOLoginManager::TPL_SSO, [
+        ]);
+    }
+
     public function sub(): Response
     {
         return $this->viewResponse->asTpl();

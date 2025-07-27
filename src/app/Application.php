@@ -69,7 +69,8 @@ EOF;
             //UI这一块
             ->get("/", route("notify", "main", "index"))
             ->get("/manage", route("manager", "main", "index"))
-            ->get("/center", route("manager", "main", "center"))
+            ->get("/account", route("manager", "main", "account"))
+            ->get("/sso", route("manager", "main", "sso"))
             ->get("/channel", route("manager", "main", "channel"))
             ->get("/sub", route("manager", "main", "sub"))
             ->get("/sub/get", route("manager", "sub", "get"))
