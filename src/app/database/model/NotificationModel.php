@@ -8,18 +8,20 @@ use nova\plugin\orm\object\Model;
 
 class NotificationModel extends Model
 {
-    public string $title    = "";    // 消息标题
-    public string $message  = "";    // 富文本信息（HTML / Markdown）
-    public string $type     = "default"; // 通知类型：success、warning、error、default
-    public bool   $is_read  = false; // 是否已读
-    public string $actionLeftUrl   = ""; // 左侧操作按钮URL
-    public string $actionLeftText  = ""; // 左侧操作按钮文本
-    public string $actionRightUrl  = ""; // 右侧操作按钮URL
-    public string $actionRightText = ""; // 右侧操作按钮文本
-    public int $t = 0;//发布时间
+    public string  $title           = "";        // 消息标题
+    public string  $message         = "";        // 消息内容（纯文本 / Markdown）
+    public string  $type            = "default"; // 消息类型：default, info, warning, error, success
+    public string  $click           = "";        // 点击通知时打开的 URL
+    public string  $actionLeftUrl   = "";        // 左侧按钮 URL
+    public string  $actionLeftText  = "";        // 左侧按钮文本
+    public string  $actionRightUrl  = "";        // 右侧按钮 URL
+    public string  $actionRightText = "";        // 右侧按钮文本
+    public bool    $is_read         = false;     // 是否已读
+    public int     $t               = 0;         // 发布时间戳（秒）
 
     public function getNoEscape(): array
     {
         return ["message"];
     }
+
 }
