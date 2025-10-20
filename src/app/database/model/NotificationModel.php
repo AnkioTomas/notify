@@ -8,6 +8,7 @@ use nova\plugin\orm\object\Model;
 
 class NotificationModel extends Model
 {
+    public int     $channel         = 0;         // 频道名称
     public string  $title           = "";        // 消息标题
     public string  $message         = "";        // 消息内容（纯文本 / Markdown）
     public string  $type            = "default"; // 消息类型：default, info, warning, error, success
