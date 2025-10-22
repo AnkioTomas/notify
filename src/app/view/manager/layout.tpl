@@ -27,7 +27,6 @@
             <mdui-dropdown>
                 <mdui-button variant="text" class="layout-header-user-info"  slot="trigger">
                     <mdui-avatar src="{$header}"></mdui-avatar>
-                    <span>{$nickname}</span>
                 </mdui-button>
                 <mdui-menu>
                     <mdui-menu-item href="/logout">退出登陆</mdui-menu-item>

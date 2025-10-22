@@ -5,7 +5,7 @@ window.pageOnLoad = function (loading) {
 
     function getLink() {
         $.request.get("/sub/get",{},function (data) {
-            $("#linkInput").val(location.origin+"/subscribe/"+data.data);
+            $("#linkInput").val(location.origin+"/sse/"+data.data);
         });
     }
 

@@ -43,7 +43,8 @@ class Channel extends BaseController
             ]);
         }
         ChannelDao::getInstance()->delete()->where(['id' => $this->request->post("id", 0)])->commit();
-        NotificationDao::getInstance($channel->channel)->dropTable();
+        // 删除该频道的所有通知
+        NotificationDao::getInstance()->delete()->where(['channel' => $channel->id])->commit();
         return Response::asJson([
             'code' => 200,
         ]);

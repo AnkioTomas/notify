@@ -61,13 +61,15 @@ EOF;
     {
         $this->routeStatic();
         Route::getInstance()
-            // 发布消息通知
-            ->getOrPost("/publish/{channel}_{token}", route("index", "main", "publish"))
-            ->get("/subscribe/{token}", route("index", "main", "subscribe"))
-            ->get("/read/{channel}/{id}/{token}", route("index", "main", "read"))
+            // API 路由
 
-            //UI这一块
+
+
+            // UI 路由
             ->get("/", route("notify", "main", "index"))
+            ->get("/notify/{channel}", route("notify", "main", "channel"))
+            
+            // 管理后台
             ->get("/manage", route("manager", "main", "index"))
             ->get("/account", route("manager", "main", "account"))
             ->get("/sso", route("manager", "main", "sso"))
@@ -78,8 +80,11 @@ EOF;
             ->get("/channel/list", route("manager", "channel", "list"))
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))
-
             ->get("/logout", route("manager", "main", "logout"))
+            //
+            ->get("/sse/{token}", route("index", "main", "sse"))
+            ->get("/read/{id}/{token}", route("index", "main", "read"))
+            ->post("/{channel}/{token}", route("index", "main", "publish"))
         ;
     }
 

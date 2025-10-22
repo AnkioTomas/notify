@@ -29,7 +29,6 @@ class Main extends BaseController
             [
                 'title' => Application::SYSTEM_NAME,
                 'header' => $this->userModel->avatar,
-                'nickname' => $this->userModel->display_name,
             ]
         );
 
@@ -88,8 +87,7 @@ class Main extends BaseController
 
     public function sso(): Response
     {
-        return $this->viewResponse->asTpl(SSOLoginManager::TPL_SSO, [
-        ]);
+        return $this->viewResponse->asTpl(SSOLoginManager::TPL_SSO);
     }
 
     public function sub(): Response

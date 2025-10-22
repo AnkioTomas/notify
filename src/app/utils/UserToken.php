@@ -51,7 +51,7 @@ class UserToken
 
     public function createToken(): string
     {
-        return substr(uniqid(), 0, 6);
+        return substr(md5(uniqid()), 0, 6);
     }
 
     public function getToken(): string
