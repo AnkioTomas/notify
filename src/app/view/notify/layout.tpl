@@ -69,6 +69,7 @@
 <body class="bg">
 {include file="publicScript.tpl"}
 
+
 <mdui-layout style="height: calc(var(--vh))">
     <mdui-top-app-bar scroll-behavior="elevate" scroll-target=".layout-main">
         <mdui-button-icon icon="menu" id="navigation-drawer-switch"></mdui-button-icon>
@@ -100,6 +101,8 @@
         </div>
     </mdui-layout-main>
 </mdui-layout>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js" integrity="sha512-SYfDUYPg5xspsG6OOpXU366G8SZsdHOhqk/icdrYJ2E/WKZxPxze7d2HD3AyXpT7U22PZ5y74xRpqZ6A2bJ+kQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script src="/static/js/notify-init.js?v={$__v}"></script>
 </body>
 </html>
