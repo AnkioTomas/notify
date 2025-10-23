@@ -115,7 +115,11 @@ $.loader(['Pjax','Toaster'], () => {
     /* -------------------------------------------------------------------------- */
     /*                              通知卡片渲染                                  */
     /* -------------------------------------------------------------------------- */
-    var md = window.markdownit();
+    var md = window.markdownit({
+        html: true, // 允许 HTML 标签
+        linkify: true, // 自动识别链接
+        typographer: true, // 智能标点
+    });
     /**
      * 渲染通知卡片
      * @param {Array} notifications - 通知列表
