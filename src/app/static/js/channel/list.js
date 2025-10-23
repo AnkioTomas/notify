@@ -82,7 +82,7 @@ window.pageOnLoad = function (loading) {
         dialog.setValue(row);
         }).on('click', '.action-copy', function () {
         let row = database.getRow($(this).data("index"));
-        let uri = location.origin + "/" + row.channel + "/" + row.token;
+        let uri = location.origin + "/" + encodeURI(row.channel) + "/" + row.token;
         $.copy(uri);
         $.toaster.success("已复制链接");
     }).on('click', '.action-test', function () {
@@ -91,7 +91,7 @@ window.pageOnLoad = function (loading) {
         testDialog.open();
         // 设置默认值和URL
         testDialog.setValue({
-            url: `${location.origin}/${row.channel}/${row.token}`,
+            url: `${location.origin}/${encodeURI(row.channel)}/${row.token}`,
             title: "测试通知",
             message: "这是一条测试消息",
             type: "info",
@@ -106,7 +106,7 @@ window.pageOnLoad = function (loading) {
     });
 
     $("#addApp").on("click", () => {
-        dialog.open();
+        dialog.open(true);
     });
 
     dialog.submit("/channel/edit", (data, response) => {
