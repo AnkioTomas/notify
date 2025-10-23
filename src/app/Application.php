@@ -82,6 +82,7 @@ EOF;
             ->post("/channel/del", route("manager", "channel", "del"))
             ->get("/logout", route("manager", "main", "logout"))
             //
+            ->get("/list/{token}", route("index", "main", "list"))
             ->get("/sse/{token}", route("index", "main", "sse"))
             ->get("/read/{id}/{token}", route("index", "main", "read"))
             ->post("/{channel}/{token}", route("index", "main", "publish"))

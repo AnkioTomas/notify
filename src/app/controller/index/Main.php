@@ -28,6 +28,7 @@ class Main extends Controller
         $model = NotificationDao::getInstance()->post(
             $channelModel->id,
             $this->request->getHeaderValue('Title') ?? '',
+            $this->request->raw(),
             $this->request->getHeaderValue('Type')?? 'default',
             $this->request->getHeaderValue('Action-Left-Url')?? '',
             $this->request->getHeaderValue('Action-Left-Text')?? '',
@@ -55,12 +56,7 @@ class Main extends Controller
         // 收集所有频道的通知
         foreach ($channels as $channel) {
             $channelNotifications = NotificationDao::getInstance()->getByChannel($channel->id);
-            if (!empty($channelNotifications)) {
-                foreach ($channelNotifications as $notification) {
-                    $notification->channel_name = $channel->channel;
-                    $notifications[] = $notification;
-                }
-            }
+            $notifications[$channel->channel] = $channelNotifications;
         }
 
 
@@ -111,7 +107,7 @@ class Main extends Controller
      * 标记通知为已读
      * GET /read/{id}/{token}
      */
-    public function read(int $id, string $token): Response
+    public function read(string $id, string $token): Response
     {
         (new UserToken())->checkToken($token);
 
