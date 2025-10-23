@@ -74,7 +74,7 @@ class NotificationDao extends Dao
 
         $model->id = $this->insertModel($model);
 
-        $this->delete()->where(["t < ".(time() - 3600 * 24 * 2)])->commit();
+        $this->delete()->where(["t < ".(time() - 3600 * 24 )])->commit();
 
         return $model;
     }
