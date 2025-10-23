@@ -167,12 +167,12 @@ $.loader(['Pjax','Toaster'], () => {
                             <div class="mb-1 text-secondary" style="font-size: 12px;">
                                 ${notification.channel ? `${notification.channel}` : ''}
                             </div>
-                            ${notification.title ? `
+                            
                             <div style="display:flex; align-items:center; gap:8px;">
-                                <h3 class="m-0 text-primary" style="font-size: 16px; font-weight: 600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${notification.title}</h3>
-                                <span class="text-tertiary" style="font-size: 12px;">${timeAgo}</span>
+                              ${notification.title ? `  <h3 class="m-0 text-primary" style="font-size: 16px; font-weight: 600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${notification.title}</h3>
+                               ` : ''}  <span class="text-tertiary" style="font-size: 12px;">${timeAgo}</span>
                             </div>
-                            ` : ''}
+                           
                             ${notification.message ? `<p class="m-0 mt-1 text-secondary" style="word-break: break-word;">${md.render(notification.message)}</p>` : ''}
                             ${actionButtons}
                         </div>

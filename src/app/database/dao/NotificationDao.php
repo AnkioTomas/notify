@@ -74,10 +74,7 @@ class NotificationDao extends Dao
 
         $model->id = $this->insertModel($model);
 
-        // 随机清理过期通知
-        if (rand(1, 100) == 1) {
-            $this->delete()->where(["t < ".(time() - 3600 * 24 * 2)])->commit();
-        }
+        $this->delete()->where(["t < ".(time() - 3600 * 24 * 2)])->commit();
 
         return $model;
     }
