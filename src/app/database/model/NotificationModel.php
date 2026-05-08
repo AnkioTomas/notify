@@ -4,24 +4,159 @@ declare(strict_types=1);
 
 namespace app\database\model;
 
+use app\utils\Parsedown;
+use nova\framework\core\Context;
 use nova\plugin\orm\object\Model;
 
 class NotificationModel extends Model
 {
-    public int     $channel         = 0;         // 频道名称
+    public int     $app         = 0;         // 频道名称
     public string  $title           = "";        // 消息标题
     public string  $message         = "";        // 消息内容（纯文本 / Markdown）
-    public string  $type            = "default"; // 消息类型：default, info, warning, error, success
-    public string  $actionLeftUrl   = "";        // 左侧按钮 URL
-    public string  $actionLeftText  = "";        // 左侧按钮文本
-    public string  $actionRightUrl  = "";        // 右侧按钮 URL
-    public string  $actionRightText = "";        // 右侧按钮文本
-    public bool    $is_read         = false;     // 是否已读
+    public string  $priority            = "info"; // 消息类型： info, warning, error, success
+    public array  $actions   = [];
     public int     $t               = 0;         // 发布时间戳（秒）
+    public string $short_url = "";
+
+    private const array PRIORITY_EMOJI = [
+        'info'    => '🔵',
+        'warning' => '🟡',
+        'error'   => '🔴',
+        'success' => '🟢',
+    ];
+
+    public function getUnique(): array
+    {
+        return ['short_url'];
+    }
 
     public function getNoEscape(): array
     {
         return ["message"];
+    }
+
+    public function toWechat(): string
+    {
+        $emoji = $this->priorityEmoji();
+        $actions = [];
+        foreach ($this->actions as $key => $value) {
+            $actions[] = "<a href='$value'>$key</a>";
+        }
+        $actionsText = implode("\n", $actions);
+        $url = $this->viewUrl();
+
+        $markdown = <<<EOF
+# $emoji $this->title
+---
+$this->message
+---
+$actionsText
+---
+ <a href='$url'>查看原文</a>
+EOF;
+
+        return $this->emojiMarkdownToText($markdown);
+    }
+
+    public function toHtml(): string
+    {
+        $emoji    = $this->priorityEmoji();
+        $priority = $this->escape($this->priority);
+        $title    = $this->escape($this->title);
+        $body     = (new Parsedown())->setSafeMode(false)->text($this->message);
+        $url      = $this->escape($this->viewUrl());
+        $time     = $this->t > 0 ? date('Y-m-d H:i:s', $this->t) : '';
+
+        $actions = '';
+        if ($this->actions !== []) {
+            $items = '';
+            foreach ($this->actions as $label => $href) {
+                $l = $this->escape((string)$label);
+                $h = $this->escape((string)$href);
+                $items .= "<a class=\"notify-action\" href=\"$h\" target=\"_blank\" rel=\"noopener noreferrer\">$l</a>";
+            }
+            $actions = "<div class=\"notify-actions\">$items</div>";
+        }
+
+        $timeHtml = $time === '' ? '' : "<time class=\"notify-time\">$time</time>";
+
+        return <<<HTML
+<article class="notify notify-$priority">
+  <header class="notify-header">
+    <span class="notify-emoji" aria-hidden="true">$emoji</span>
+    <h2 class="notify-title">$title</h2>
+  </header>
+  <div class="notify-body">$body</div>
+  $actions
+  <footer class="notify-footer">
+    $timeHtml
+    <a class="notify-view" href="$url">查看原文</a>
+  </footer>
+</article>
+HTML;
+    }
+
+    private function priorityEmoji(): string
+    {
+        return self::PRIORITY_EMOJI[$this->priority] ?? self::PRIORITY_EMOJI['info'];
+    }
+
+    private function viewUrl(): string
+    {
+        return Context::instance()->request()->getBasicAddress() . '/' . $this->short_url;
+    }
+
+    private function escape(string $s): string
+    {
+        return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    public function emojiMarkdownToText($md): string
+    {
+        // 1. 标题 (使用极具仪式感的图标)
+        $md = preg_replace('/^# (.*)$/m', '📢 【 $1 】', $md);
+        $md = preg_replace('/^## (.*)$/m', '📌 $1', $md);
+        $md = preg_replace('/^### (.*)$/m', '🔹 $1', $md);
+
+        // 2. 强调 (加粗用火，斜体用闪亮)
+        $md = preg_replace('/\*\*(.*?)\*\*/', '🔥$1🔥', $md);
+        $md = preg_replace('/\*([^\*]+)\*/', '✨$1✨', $md);
+
+        // 3. 列表 (使用动感图标)
+        $md = preg_replace('/^\s*[\*\+-]\s+(.*)$/m', '✅ $1', $md);
+
+        // 4. 有序列表 (使用数字表情符号替换)
+        $md = preg_replace_callback('/^\s*(\d+)\.\s+(.*)$/m', function ($matches) {
+            $numMap = [
+                1 => '1️⃣', 2 => '2️⃣', 3 => '3️⃣', 4 => '4️⃣', 5 => '5️⃣',
+                6 => '6️⃣', 7 => '7️⃣', 8 => '8️⃣', 9 => '9️⃣', 0 => '0️⃣'
+            ];
+            $num = $matches[1];
+            $emojiNum = '';
+            foreach (str_split($num) as $digit) {
+                $emojiNum .= $numMap[$digit] ?? $digit;
+            }
+            return $emojiNum . ' ' . $matches[2];
+        }, $md);
+
+        // 5. 引用 (书本或扩音器效果)
+        $md = preg_replace('/^>\s?(.*)$/m', '📖 ❝ $1 ❞', $md);
+
+        // 6. 代码 (使用电脑或齿轮装饰)
+        $md = preg_replace('/`(.*?)`/', '💻『 $1 』', $md);
+
+        // 7. 分割线 (一串星星)
+        $md = preg_replace('/^---$/m', '────────────────', $md);
+
+        // 8. 链接与图片
+        $md = preg_replace('/\!\[(.*?)\]\((.*?)\)/', '🖼️ [图片: $1]', $md);
+        $md = preg_replace('/\[(.*?)\]\((.*?)\)/', '🔗 $1 ($2)', $md);
+
+        // 9. 任务列表 (针对 [ ] 和 [x])
+        $md = preg_replace('/- \[ \] (.*)/', '⬜ $1', $md);
+        $md = preg_replace('/- \[x\] (.*)/', '🧡 $1', $md);
+
+        return $md;
     }
 
 }
