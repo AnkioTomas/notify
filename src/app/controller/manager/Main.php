@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace app\controller\manager;
 
 use app\Application;
-use app\controller\notify\BaseController;
 use nova\framework\http\Response;
 use nova\plugin\cookie\Session;
 use nova\plugin\login\manager\PwdLoginManager;
@@ -18,9 +17,9 @@ class Main extends BaseController
 
     public function init(): ?Response
     {
-        $ret = parent::init();
-        if (!empty($ret)) {
-            return $ret;
+        $data = parent::init();
+        if (!empty($data)) {
+            return $data;
         }
         $this->viewResponse = new ViewResponse();
 
@@ -41,9 +40,15 @@ class Main extends BaseController
                     "pjax" => true
                 ],
                 [
-                    "title" => "订阅通知",
+                    "title" => "订阅Token",
                     "icon" => "rss_feed",
-                    "url" => "/sub",
+                    "url" => "/token",
+                    "pjax" => true
+                ],
+                [
+                    "title" => "企业微信",
+                    "icon" => "rss_feed",
+                    "url" => "/wechat",
                     "pjax" => true
                 ],
                 [
@@ -90,7 +95,12 @@ class Main extends BaseController
         return $this->viewResponse->asTpl(SSOLoginManager::TPL_SSO);
     }
 
-    public function sub(): Response
+    public function token(): Response
+    {
+        return $this->viewResponse->asTpl();
+    }
+
+    public function wechat(): Response
     {
         return $this->viewResponse->asTpl();
     }
