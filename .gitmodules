@@ -19,9 +19,6 @@
 [submodule "src/nova/plugin/login"]
     path = src/nova/plugin/login
     url = https://github.com/NovaPHPOrg/nova-login
-[submodule "src/nova/plugin/minify"]
-    path = src/nova/plugin/minify
-    url = https://github.com/NovaPHPOrg/nova-minify
 [submodule "src/nova/plugin/orm"]
     path = src/nova/plugin/orm
     url = https://github.com/NovaPHPOrg/nova-orm
@@ -31,18 +28,9 @@
 [submodule "src/nova/plugin/ip"]
     path = src/nova/plugin/ip
     url = https://github.com/NovaPHPOrg/nova-ip
-[submodule "src/app/static/components/language"]
-    path = src/app/static/components/language
-    url = https://git.ankio.icu/nova-ui/nova-language
 [submodule "src/app/static/components/captcha"]
     path = src/app/static/components/captcha
     url = https://git.ankio.icu/nova-ui/nova-captcha
 [submodule "src/nova/plugin/device"]
     path = src/nova/plugin/device
     url = https://github.com/NovaPHPOrg/nova-device
-[submodule "src/app/static/components/theme"]
-    path = src/app/static/components/theme
-    url = https://git.ankio.icu/nova-ui/nova-theme
-[submodule "src/app/static/components/pjax"]
-    path = src/app/static/components/pjax
-    url = https://git.ankio.icu/nova-ui/nova-pjax
