@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace app\controller\manager;
 
-use app\controller\notify\BaseController;
-use app\utils\UserToken;
+use function nova\framework\config;
+
 use nova\framework\http\Response;
 
-class Sub extends BaseController
+use function nova\framework\uuid;
+
+class Token extends BaseController
 {
-    protected ?UserToken $token = null;
+    protected ?string $token = null;
     public function init(): ?Response
     {
-        $this->token = new UserToken();
+        $this->token = config('authorization');
         return parent::init();
     }
 
     public function reset(): Response
     {
-        $this->token->resetToken();
+        $this->token = md5(uuid());
+        config('authorization', $this->token);
         return Response::asJson([
             'code' => 200,
             'msg' => '操作成功',
@@ -30,7 +33,7 @@ class Sub extends BaseController
     {
         return Response::asJson([
             'code' => 200,
-            'data' => $this->token->getToken(),
+            'data' => $this->token,
         ]);
     }
 }

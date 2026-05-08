@@ -38,4 +38,9 @@ class NotificationDao extends Dao
         }
         return $shortUrl;
     }
+
+    public function removeByApp(int $app): void
+    {
+        $this->delete()->where(["app" => $app])->commit();
+    }
 }

@@ -13,4 +13,19 @@ class AppDao extends Dao
     {
         return $this->find(null, ["short_name" => $name]);
     }
+
+    public function id(int $id): ?AppModel
+    {
+        return $this->find(null, ["id" => $id]);
+    }
+
+    public function remove(int $id): void
+    {
+        $app = $this->id($id);
+        if (!$app) {
+            return;
+        }
+        $this->delete()->where(["id" => $id])->commit();
+        NotificationDao::getInstance()->removeByApp($id);
+    }
 }
