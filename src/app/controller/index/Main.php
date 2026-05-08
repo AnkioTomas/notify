@@ -4,121 +4,64 @@ declare(strict_types=1);
 
 namespace app\controller\index;
 
-use app\database\dao\ChannelDao;
+use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
-use app\utils\UserToken;
-use nova\framework\exception\AppExitException;
+use app\database\model\NotificationModel;
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
-use nova\plugin\orm\exception\DbFieldError;
 
 class Main extends Controller
 {
     /**
      * 发布通知（支持直接header映射和ntfy兼容）
-     * POST /publish/{channel}/{token}
+     * POST /{channel}
      */
-    public function publish(string $channel, string $token): Response
+    public function publish(string $channel): Response
     {
-        $channelModel = ChannelDao::getInstance()->find(null, ['channel' => $channel]);
-        if (empty($channelModel) || $token !== $channelModel->token) {
+        $app = AppDao::getInstance()->find(null, ['short_name' => $channel]);
+        if (empty($app)) {
             return Response::asJson(["msg" => "Unauthorized", "code" => 403,], 403);
         }
 
-        $model = NotificationDao::getInstance()->post(
-            $channelModel->id,
-            $this->request->getHeaderValue('Title') ?? '',
-            $this->request->raw(),
-            $this->request->getHeaderValue('Type')?? 'default',
-            $this->request->getHeaderValue('Action-Left-Url')?? '',
-            $this->request->getHeaderValue('Action-Left-Text')?? '',
-            $this->request->getHeaderValue('Action-Right-Url')?? '',
-            $this->request->getHeaderValue('Action-Right-Text')?? '',
-        );
+        $headers = $this->request->getHeaders();
+
+        $authorization = $headers['Authorization'] ?? null;
+
+        // 校验授权
+
+        $title = $headers['X-Title'] ?? '';
+        $priority = $headers['X-Priority'] ?? 'info';
+        $actions = $headers['X-Actions'] ?? '';
+        $message = $this->request->raw() ?? '';
+        $items = explode(';', trim($actions, ';'));
+
+        $a  = [];
+        foreach ($items as $item) {
+            [$name,$url] = explode(',', $item);
+            $a[trim($name)] = trim($url);
+        }
+        $actions = $a;
+
+        // Title	通知标题	X-Title: 警报
+        //Priority	优先级 (1-5 或 min, low, default, high, urgent)	X-Priority: 5
+        //Tags	标签/表情符号（用逗号分隔）	X-Tags: warning,skull
+        //Delay	延迟发送（例如 30min 或 时间戳）	X-Delay: 10am
+        //Actions	交互按钮（JSON 格式）	X-Actions: view, Open, [https://google.com](https://google.com)
+        //Click	点击通知时跳转的 URL	X-Click: [https://example.com](https://example.com)
+        //Attach	附件 URL	X-Attach: [https://example.com/file.jpg](https://example.com/file.jpg)
+
+        $model = new NotificationModel([
+            'app' => $app->id,
+            'title' => $title,
+            'message' => $message,
+            'priority' => $priority,
+            'actions' => $actions,
+            't' => time(),
+        ]);
+
+        $model = NotificationDao::getInstance()->post($model);
 
         return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);
-    }
 
-    /**
-     * 获取所有通知列表
-     * GET /list/{token}
-     * @throws AppExitException|DbFieldError
-     */
-    public function list(string $token): Response
-    {
-        (new UserToken())->checkToken($token);
-
-        $notifications = [];
-
-        // 获取所有频道
-        $channels = ChannelDao::getInstance()->getAll()['data'];
-        
-        // 收集所有频道的通知
-        foreach ($channels as $channel) {
-            $channelNotifications = NotificationDao::getInstance()->getByChannel($channel->id);
-            $notifications[$channel->channel] = $channelNotifications;
-        }
-
-
-
-        return Response::asJson([
-            "code" => 200,
-            "data" => $notifications
-        ]);
-    }
-
-    /**
-     * SSE 实时订阅（推荐）
-     * GET /sse/{token}
-     */
-    public function sse(string $token): Response
-    {
-        (new UserToken())->checkToken($token);
-
-        return Response::asSSE(function ($emit) use ($token) {
-            $lastCheck = time() - 5;
-
-
-            while (!connection_aborted()) {
-                $channels = ChannelDao::getInstance()->getAll()['data'];
-                // 检查所有频道的新通知
-                foreach ($channels as $channel) {
-                    $notifications = [];
-                    $data = NotificationDao::getInstance()->lastest($channel->id, $lastCheck);
-                    if (!empty($data)) {
-                        $lastCheck = time();
-                        $notifications[$channel->channel] = $data;
-                        $emit(json_encode($notifications), 'message');
-
-                    }
-                }
-
-                // 每 3 秒发送心跳
-                if (time() % 3 === 0) {
-                    $emit(json_encode(["heartbeat" => time()]), 'heartbeat');
-                }
-
-                sleep(1);
-            }
-        });
-    }
-
-    /**
-     * 标记通知为已读
-     * GET /read/{id}/{token}
-     */
-    public function read(string $id, string $token): Response
-    {
-        (new UserToken())->checkToken($token);
-
-        $notification = NotificationDao::getInstance()->find(null, ['id' => $id]);
-        if (empty($notification)) {
-            return Response::asJson(["msg" => "Notification not found", "code" => 404,], 404);
-        }
-
-        $notification->is_read = true;
-        NotificationDao::getInstance()->updateModel($notification);
-
-        return Response::asJson(["code" => 200]);
     }
 }
