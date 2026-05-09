@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace app;
 
+use app\utils\Installer;
 use nova\framework\App;
 
 use function nova\framework\route;
@@ -22,6 +23,7 @@ class Application extends App
 {
     public function onFrameworkStart(): void
     {
+        Installer::register();
         Route::getInstance()
             // API 路由
 

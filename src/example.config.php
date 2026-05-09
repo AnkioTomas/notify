@@ -9,6 +9,7 @@ return array(
     array(
         0 => '0.0.0.0',
     ),
+    'installed' => false,
     'version' => '1.0.2',
     'db' =>
     array(
