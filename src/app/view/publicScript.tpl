@@ -1,33 +1,24 @@
-<script src="/static/framework/bootloader.js?v={$__v}"></script>
-<script src="/static/framework/utils/Loading.js?v={$__v}"></script>
-<script src="/static/framework/utils/Logger.js?v={$__v}"></script>
-<script src="/static/framework/utils/Loader.js?v={$__v}"></script>
-<script src="/static/framework/utils/Event.js?v={$__v}"></script>
-<script src="/static/framework/utils/Toaster.js?v={$__v}"></script>
-<script src="/static/framework/utils/Request.js?v={$__v}"></script>
-<script src="/static/components/theme/ThemeSwitcher.js?v={$__v}"></script>
-<script src="/static/components/language/Language.js?v={$__v}"></script>
+<script src="/static/bundle?file=
+framework/libs/vhcheck.min.js,
+framework/libs/mdui.global.min.js,
+framework/bootloader.js,
+framework/utils/Loading.js,
+framework/utils/Logger.js,
+framework/utils/Loader.js,
+framework/utils/Timing.js,
+framework/utils/Event.js,
+framework/utils/Toaster.js,
+framework/utils/Request.js,
+framework/theme/ThemeSwitcher.js,
+framework/language/NodeUtils.js,
+framework/language/TranslateUtils.js,
+framework/language/Language.js,
+framework/imageLoader/ImageLoader.js,
+framework/pjax/pjax.min.js,
+framework/pjax/nprogress.js,
+framework/pjax/PjaxUtils.js,
+framework/layout.js,
+&type=js&v={$__v}"></script>
 <script>
-    window._v = "{$__v}"
-    let level = debug ? 'debug' : 'error';
-    $.logger.setLevel(level);
-    $.logger.info('App is running in ' + level + ' mode');
-    $.preloader([
-        'Loading',
-        'Logger',
-        'Event',
-        'Toaster',
-        'Request',
-        'ThemeSwitcher',
-        'Language'
-    ]);
-    window.loading && window.loading.close();
-    $.request.setBaseUrl(baseUri).setOnCode(401,()=>{
-        $.toaster.error('登录已过期，请重新登录');
-        setTimeout(()=>{
-            window.location.href = '/login';
-        },1000);
-    }).setOnCode(301,(response)=>{
-        window.location.href = response.data;
-    });
+    document.querySelector("#hiddenBody").remove();
 </script>
