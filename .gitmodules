@@ -35,5 +35,5 @@
     path = src/nova/plugin/device
     url = https://github.com/NovaPHPOrg/nova-device
 [submodule "src/app/static/components/dataTable"]
-	path = src/app/static/components/dataTable
-	url = https://github.com/NovaPHPOrgUI/dataTable
+    path = src/app/static/components/dataTable
+    url = https://github.com/NovaPHPOrgUI/dataTable
