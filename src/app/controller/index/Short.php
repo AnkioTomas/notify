@@ -33,21 +33,24 @@ class Short extends Controller
             ? (new Parsedown())->setSafeMode(false)->text($model->message)
             : '';
 
-        $actionsJson = json_encode(
-            $model->actions ?: new \stdClass(),
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
-        );
+        $actions = $model->actions ?? [];
+        if ($actions !== []) {
+            $json = json_encode($actions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
+            $actionsEncoded = $json !== false ? rawurlencode($json) : '';
+        } else {
+            $actionsEncoded = '';
+        }
 
         $pageTitle = ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME;
 
         $payload = [
-            'title'         => $pageTitle,
-            'heading'       => $model->title !== '' ? $model->title : '（无标题）',
-            'channel'       => $app?->name ?? '未知频道',
-            'priority'      => $model->priority,
-            'time'          => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
-            'bodyHtml'      => $bodyHtml,
-            'actionsJson'   => $actionsJson,
+            'title'           => $pageTitle,
+            'heading'         => $model->title !== '' ? $model->title : '（无标题）',
+            'channel'         => $app?->name ?? '未知频道',
+            'priority'        => $model->priority,
+            'time'            => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
+            'bodyHtml'        => $bodyHtml,
+            'actionsEncoded'  => $actionsEncoded,
         ];
 
         $view = new ViewResponse();

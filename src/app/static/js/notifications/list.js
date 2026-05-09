@@ -20,7 +20,9 @@ window.pageOnLoad = function () {
             params: '#notificationSearchForm',
             template: `
 <div class="notification-card-inner" >
-<notify-card priority="{{priority}}" heading="{{title}}" channel="{{channel}}" time="{{time}}"></notify-card>
+<notify-card priority="{{priority}}" heading="{{title}}" channel="{{channel}}" time="{{time}}">
+<template data-role="body">{{messageHtml}}</template>
+</notify-card>
 </div>`,
             columns: [
                 {
