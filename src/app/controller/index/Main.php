@@ -31,19 +31,18 @@ class Main extends Controller
 
         $headers = $this->request->getHeaders();
 
-        $authorization = $headers['Authorization'] ?? null;
+        $authorization = $headers['Authorization'] ?? $this->request->arg('authorization') ?? null;
 
-        if (config('authorization') !== $authorization) {
+        if (strlen($authorization) <= 6 || config('authorization') !== $authorization) {
             return Response::asJson(["msg" => "Unauthorized", "code" => 403,], 403);
-
         }
         // 校验授权
 
-        $title = rawurldecode($headers['X-Title'] ?? '');
+        $title = rawurldecode($headers['X-Title'] ?? $this->request->post('title') ?? '');
 
-        $priority = $headers['X-Priority'] ?? 'info';
-        $actions = rawurldecode($headers['X-Actions'] ?? '');
-        $message = $this->request->raw() ?? '';
+        $priority = $headers['X-Priority'] ?? $this->request->post('priority') ?? 'info';
+        $actions = rawurldecode($headers['X-Actions'] ?? $this->request->post('actions') ?? '');
+        $message = $this->request->post('message') ??  $this->request->raw() ?? '';
         $items = explode(';', trim($actions, ';'));
 
         $a  = [];
@@ -87,6 +86,11 @@ class Main extends Controller
         }
 
         return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);
+
+    }
+
+    public function normal()
+    {
 
     }
 }
