@@ -107,7 +107,7 @@
     <div class="row col-space16">
         <div class="col-xs12 title-large center-vertical mb-4">
             <mdui-icon name="rss_feed" class="refresh mr-2"></mdui-icon>
-            <span>订阅通知</span>
+            <span>发布通知</span>
         </div>
 
         <div class="col-xs12 pt-4">

@@ -45,7 +45,7 @@ class Main extends BaseController
                     "pjax" => true
                 ],
                 [
-                    "title" => "订阅Token",
+                    "title" => "发布通知",
                     "icon" => "rss_feed",
                     "url" => "/token",
                     "pjax" => true
