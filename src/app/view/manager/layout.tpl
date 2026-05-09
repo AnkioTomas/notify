@@ -39,7 +39,7 @@
                         </mdui-collapse-item>
                     </mdui-collapse>
                 {else}
-                    <mdui-list-item rounded data-match="{isset($sub['match'])?$sub['match']:''}" data-pjax="{$item.pjax ? 'true' : 'false'}" data-target="{isset($sub['self'])  ? 'self' : ''}" data-link="{$item.url}" icon="{$item.icon}">{$item.title}</mdui-list-item>
+                    <mdui-list-item rounded data-match="{isset($item['match'])?$item['match']:''}" data-pjax="{$item.pjax ? 'true' : 'false'}" data-target="{isset($item['self'])  ? 'self' : ''}" data-link="{$item.url}" icon="{$item.icon}">{$item.title}</mdui-list-item>
                 {/if}
             {/foreach}
         </mdui-list>

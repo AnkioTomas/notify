@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace app\controller\manager;
 
 use app\Application;
+use app\database\dao\AppDao;
+use app\database\model\AppModel;
+
 use nova\framework\http\Response;
 use nova\plugin\login\manager\PwdLoginManager;
 use nova\plugin\login\manager\SSOLoginManager;
@@ -31,12 +34,13 @@ class Main extends BaseController
         );
 
         if (!$this->request->isPjax()) {
+
             $menu =  [
                 [
                     "title" => "通知列表",
                     "icon" => "campaign",
-                    "url" => "/notifications",
-                    "pjax" => true
+                    "pjax" => true,
+                    "sub" => $this->subMenus()
                 ],
                 [
                     "title" => "通知渠道",
@@ -113,6 +117,34 @@ class Main extends BaseController
     public function wechat(): Response
     {
         return $this->viewResponse->asTpl();
+    }
+
+    private function subMenus(): array
+    {
+        $menu = [
+            [
+                "title" => "全部通知",
+                "icon" => "",
+                "url" => "/notifications",
+                "pjax" => true,
+                "match" => "^/notifications(?!\?.*app_id=)($|\?)",
+            ],
+        ];
+
+        /**
+         * @var $item AppModel
+         */
+        foreach (AppDao::getInstance()->list() as $item) {
+            $menu[] = [
+                "title" => $item->name,
+                "icon" => "",
+                "url" => "/notifications?app_id=".$item->id,
+                "pjax" => true,
+                "match" => "^/notifications\?([^#]*&)?app_id=" . $item->id . "(&|$)",
+            ];
+        }
+
+        return $menu;
     }
 
 }

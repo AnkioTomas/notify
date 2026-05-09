@@ -28,4 +28,9 @@ class AppDao extends Dao
         $this->delete()->where(["id" => $id])->commit();
         NotificationDao::getInstance()->removeByApp($id);
     }
+
+    public function list(): array
+    {
+        return $this->select()->commit();
+    }
 }

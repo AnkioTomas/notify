@@ -8,24 +8,12 @@ window.pageLoadFiles = ['Form', 'CardView', 'js/notify/NotifyCard.js'];
 window.pageOnLoad = function () {
     let cv = null;
 
-    function fillChannelSelect(rows) {
-        const sel = document.querySelector('#notificationSearchForm [name="app_id"]');
-        if (!sel) return;
-        const frag = document.createDocumentFragment();
-        for (const app of rows || []) {
-            const item = document.createElement('mdui-menu-item');
-            item.value = String(app.id);
-            item.textContent = app.name;
-            frag.appendChild(item);
-        }
-        sel.appendChild(frag);
-    }
 
     function initCardView() {
         cv = new CardView('#notificationsRoot');
         cv.load({
             uri: '/notifications/list',
-            params: '#notificationSearchForm',
+            params: $.url.getAllParams(),
             template: `<div class="notification-card-inner">
                 <notify-card
                     priority="{{priority}}"
@@ -51,18 +39,16 @@ window.pageOnLoad = function () {
             page: true,
         });
 
-        const throttledReload = $.throttle(() => cv?.reload(true), 300);
-        $('#notificationSearchForm').on(
-            'input change',
-            'mdui-text-field, mdui-select, input, select',
-            throttledReload,
-        );
     }
 
-    $.request.get('/channel/list', { page: 1, pageSize: 500 }, (res) => {
-        fillChannelSelect(res.data);
-        initCardView();
-    });
+    initCardView();
+
+    $.emitter.on('pjax:prevented',function (params) {
+        cv.reload($.url.getAllParams(),true)
+    })
+
+    window.pageOnUnLoad = function (){
+    }
 
     return false;
 };
