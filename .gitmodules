@@ -1,6 +1,6 @@
 [submodule "src/app/static/framework"]
     path = src/app/static/framework
-	url = https://github.com/NovaPHPOrgUI/framework.git
+    url = https://github.com/NovaPHPOrgUI/framework.git
 [submodule "src/nova/framework"]
     path = src/nova/framework
     url = https://github.com/NovaPHPOrg/nova-framework
@@ -30,7 +30,10 @@
     url = https://github.com/NovaPHPOrg/nova-ip
 [submodule "src/app/static/components/captcha"]
     path = src/app/static/components/captcha
-	url = https://github.com/NovaPHPOrgUI/captcha.git
+    url = https://github.com/NovaPHPOrgUI/captcha.git
 [submodule "src/nova/plugin/device"]
     path = src/nova/plugin/device
     url = https://github.com/NovaPHPOrg/nova-device
+[submodule "src/app/static/components/dataTable"]
+	path = src/app/static/components/dataTable
+	url = https://github.com/NovaPHPOrgUI/dataTable
