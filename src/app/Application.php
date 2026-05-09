@@ -50,7 +50,7 @@ class Application extends App
             ->getOrPost("/hook", route("index", "hook", "index"))
 
             ->post("/{channel}", route("index", "main", "publish"))
-            ->get("/{short}", route("index", "main", "short"))
+            ->get("/{short}", route("index", "short", "detail"))
         ;
     }
 

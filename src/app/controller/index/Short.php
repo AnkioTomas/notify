@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace app\controller\index;
+
+use app\Application;
+use app\database\dao\AppDao;
+use app\database\dao\NotificationDao;
+use app\utils\Parsedown;
+use nova\framework\http\Response;
+use nova\framework\route\Controller;
+use nova\plugin\tpl\ViewResponse;
+
+/**
+ * 通知「查看原文」公开页：与 nova/plugin/tpl/error 相同的全页壳 + PJAX 片段机制。
+ */
+class Short extends Controller
+{
+    /**
+     * GET /{short}
+     */
+    public function detail(string $short): Response
+    {
+        $model = NotificationDao::getInstance()->getByShortUrl($short);
+        if ($model === null) {
+            return Response::asRedirect('/404');
+        }
+
+        $app = AppDao::getInstance()->id($model->app);
+
+        $bodyHtml = $model->message !== ''
+            ? (new Parsedown())->setSafeMode(false)->text($model->message)
+            : '';
+
+        $actionsJson = json_encode(
+            $model->actions ?: new \stdClass(),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
+        );
+
+        $pageTitle = ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME;
+
+        $payload = [
+            'title'         => $pageTitle,
+            'heading'       => $model->title !== '' ? $model->title : '（无标题）',
+            'channel'       => $app?->name ?? '未知频道',
+            'priority'      => $model->priority,
+            'time'          => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
+            'bodyHtml'      => $bodyHtml,
+            'actionsJson'   => $actionsJson,
+        ];
+
+        $view = new ViewResponse();
+
+        if ($this->request->isPjax()) {
+            return $view->asTpl('detail', $payload);
+        }
+
+        return $view->asTpl('layout', [
+            'title' => $pageTitle,
+        ]);
+    }
+}

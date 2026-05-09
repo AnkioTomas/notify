@@ -35,12 +35,20 @@ class NotificationDao extends Dao
      *
      * @return array{total: int, data: NotificationModel[]}
      */
-    public function paginateLatest(int $page, int $pageSize): array
+    public function paginateLatest(int $page, int $pageSize, ?int $appId = null, ?string $priority = null): array
     {
         $page = max(1, $page);
         $pageSize = max(1, min(50, $pageSize));
 
-        $result = $this->getAll([], [], $page, $pageSize, 't');
+        $where = [];
+        if ($appId !== null && $appId > 0) {
+            $where['app'] = $appId;
+        }
+        if ($priority !== null && $priority !== '') {
+            $where['priority'] = $priority;
+        }
+
+        $result = $this->getAll([], $where, $page, $pageSize, 't');
 
         return [
             'total' => (int)($result['total'] ?? 0),

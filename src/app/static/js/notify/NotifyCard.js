@@ -10,6 +10,38 @@ class NotifyCard extends HTMLElement {
         success: { label: '成功', icon: 'check_circle', cls: 'secondary' },
     };
 
+    /** 与 #priorityMeta 的 cls（primary…error）对齐，用于重复的 token 样式生成 */
+    static #paletteTones = ['primary', 'secondary', 'tertiary', 'error'];
+
+    static #paletteCss() {
+        return NotifyCard.#paletteTones
+            .map(
+                (t) =>
+                    `notify-card .text-${t} { color: rgba(var(--mdui-color-${t})) !important; }
+notify-card .bg-${t} { background-color: rgba(var(--mdui-color-${t})) !important; }
+notify-card .text-on-${t} { color: rgba(var(--mdui-color-on-${t})) !important; }
+`
+            )
+            .join('');
+    }
+
+    static #actionToneCss() {
+        return NotifyCard.#paletteTones
+            .map(
+                (t) =>
+                    `notify-card .notify-actions--${t} mdui-button::part(button) {
+    background-color: rgba(var(--mdui-color-${t})) !important;
+    color: rgba(var(--mdui-color-on-${t})) !important;
+}
+notify-card .notify-actions--${t} mdui-button:focus-visible::part(button) {
+    outline: 2px solid rgba(var(--mdui-color-${t}));
+    outline-offset: 2px;
+}
+`
+            )
+            .join('');
+    }
+
     /** 组件内自洽：utility + 正文 markdown + 全宽（不依赖页面 base.css） */
     static #styleText = `
 notify-card {
@@ -44,21 +76,7 @@ notify-card .body-small {
 notify-card .font-medium { font-weight: 500 !important; }
 notify-card .font-bold { font-weight: 700 !important; }
 
-notify-card .text-primary { color: rgba(var(--mdui-color-primary)) !important; }
-notify-card .bg-primary { background-color: rgba(var(--mdui-color-primary)) !important; }
-notify-card .text-on-primary { color: rgba(var(--mdui-color-on-primary)) !important; }
-
-notify-card .text-secondary { color: rgba(var(--mdui-color-secondary)) !important; }
-notify-card .bg-secondary { background-color: rgba(var(--mdui-color-secondary)) !important; }
-notify-card .text-on-secondary { color: rgba(var(--mdui-color-on-secondary)) !important; }
-
-notify-card .text-tertiary { color: rgba(var(--mdui-color-tertiary)) !important; }
-notify-card .bg-tertiary { background-color: rgba(var(--mdui-color-tertiary)) !important; }
-notify-card .text-on-tertiary { color: rgba(var(--mdui-color-on-tertiary)) !important; }
-
-notify-card .text-error { color: rgba(var(--mdui-color-error)) !important; }
-notify-card .bg-error { background-color: rgba(var(--mdui-color-error)) !important; }
-notify-card .text-on-error { color: rgba(var(--mdui-color-on-error)) !important; }
+${NotifyCard.#paletteCss()}
 
 notify-card .text-on-surface { color: rgba(var(--mdui-color-on-surface)) !important; }
 notify-card .text-on-surface-variant { color: rgba(var(--mdui-color-on-surface-variant)) !important; }
@@ -104,10 +122,20 @@ notify-card .notify-card {
     width: 100%;
     max-width: none;
     border-left: 6px solid rgba(var(--mdui-color-primary));
+    transition: background-color 0.2s ease;
 }
 notify-card .notify-card.notify-tertiary  { border-left-color: rgba(var(--mdui-color-tertiary)); }
 notify-card .notify-card.notify-error     { border-left-color: rgba(var(--mdui-color-error)); }
 notify-card .notify-card.notify-secondary { border-left-color: rgba(var(--mdui-color-secondary)); }
+
+/* 卡片背景：与优先级对应的 M3 container 色 */
+notify-card .notify-card.notify-primary   { background-color: rgba(var(--mdui-color-primary-container)); }
+notify-card .notify-card.notify-secondary { background-color: rgba(var(--mdui-color-secondary-container)); }
+notify-card .notify-card.notify-tertiary  { background-color: rgba(var(--mdui-color-tertiary-container)); }
+notify-card .notify-card.notify-error     { background-color: rgba(var(--mdui-color-error-container)); }
+
+/* 操作按钮：与优先级同色系的 filled（穿透 shadow 的 button part） */
+${NotifyCard.#actionToneCss()}
 
 notify-card .notify-icon-sm { font-size: 1rem; }
 
@@ -168,22 +196,16 @@ notify-card .notify-body li { list-style: revert; margin: 0.15rem 0; }
             .replaceAll("'", '&#39;');
     }
 
-    static #mdHtml(md) {
-        if (typeof window.markdownit === 'function') {
-            return window.markdownit({ html: false, linkify: true, breaks: true }).render(md);
-        }
-        return `<pre>${NotifyCard.#esc(md)}</pre>`;
-    }
-
     static #iconLine(icon, text, spanClass = '') {
         if (!text) return '';
         return `<span class="d-inline-flex items-center ${spanClass}"><mdui-icon name="${icon}" class="notify-icon-sm mr-1"></mdui-icon>${NotifyCard.#esc(text)}</span>`;
     }
 
-    static #actionsBlock(obj) {
+    static #actionsBlock(obj, toneCls) {
         const rows = obj && typeof obj === 'object' ? Object.entries(obj) : [];
         if (!rows.length) return '';
-        return `<div class="d-flex flex-wrap gap-2 mt-3">${rows.map(
+        const tone = NotifyCard.#paletteTones.includes(toneCls) ? toneCls : 'primary';
+        return `<div class="d-flex flex-wrap gap-2 mt-3 notify-actions notify-actions--${tone}">${rows.map(
             ([label, href]) =>
                 `<mdui-button variant="filled" href="${NotifyCard.#esc(href)}" target="_blank" rel="noopener noreferrer">${NotifyCard.#esc(label)}</mdui-button>`
         ).join('')}</div>`;
@@ -200,7 +222,7 @@ notify-card .notify-body li { list-style: revert; margin: 0.15rem 0; }
 
     constructor() {
         super();
-        this._p = { body: null, markdown: null, actions: null };
+        this._p = { body: null, actions: null };
         this._slot = { body: null, actions: null };
     }
 
@@ -237,21 +259,14 @@ notify-card .notify-body li { list-style: revert; margin: 0.15rem 0; }
     set backHref(v) { this.setAttribute('back-href', v); }
     get backHref()  { return this.getAttribute('back-href') || ''; }
 
-    set body(v)     { this._p.body = v; if (this.isConnected) this.#paint(); }
-    get body()      { return this._p.body; }
+    set body(v) { this._p.body = v; if (this.isConnected) this.#paint(); }
+    get body()  { return this._p.body; }
 
-    set markdown(v) { this._p.markdown = v; if (this.isConnected) this.#paint(); }
-    get markdown()  { return this._p.markdown ?? this.getAttribute('markdown'); }
-
-    set actions(v)  { this._p.actions = v; if (this.isConnected) this.#paint(); }
-    get actions()   { return this._p.actions ?? this._slot.actions; }
+    set actions(v) { this._p.actions = v; if (this.isConnected) this.#paint(); }
+    get actions()  { return this._p.actions ?? this._slot.actions; }
 
     #bodyHtml() {
-        if (this._p.body != null) return this._p.body;
-        if (this._p.markdown != null) return NotifyCard.#mdHtml(this._p.markdown);
-        if (this._slot.body != null) return this._slot.body;
-        const md = this.getAttribute('markdown');
-        return md != null ? NotifyCard.#mdHtml(md) : '';
+        return this._p.body ?? this._slot.body ?? '';
     }
 
     #actionsResolved() {
@@ -279,13 +294,10 @@ notify-card .notify-body li { list-style: revert; margin: 0.15rem 0; }
     </div>
     <h1 class="headline-medium text-${cls} font-bold mb-3 break-words">${NotifyCard.#esc(heading)}</h1>
     <div class="notify-body body-large text-on-surface">${this.#bodyHtml()}</div>
-    ${NotifyCard.#actionsBlock(this.#actionsResolved())}
+    ${NotifyCard.#actionsBlock(this.#actionsResolved(), cls)}
     ${NotifyCard.#footerBlock(this.time, this.backHref)}
 </mdui-card>`;
     }
-
-
 }
-
 
 customElements.define('notify-card', NotifyCard);

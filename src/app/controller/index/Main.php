@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace app\controller\index;
 
-use app\Application;
 use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
 use app\database\model\NotificationModel;
 
-use app\utils\Parsedown;
 use app\utils\WorkWechatApp;
 
 use function nova\framework\config;
 
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
-use nova\plugin\tpl\ViewResponse;
 
 class Main extends Controller
 {
@@ -86,72 +83,5 @@ class Main extends Controller
 
         return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);
 
-    }
-
-    /**
-     * 通知详情（"查看原文"页）。
-     * GET /{short}
-     */
-    public function short(string $short): Response
-    {
-        $model = NotificationDao::getInstance()->getByShortUrl($short);
-
-        if ($model === null) {
-            return Response::asHtml($this->renderNotFound(), [], 404);
-        }
-
-        $app = AppDao::getInstance()->id($model->app);
-
-        $bodyHtml = $model->message !== ''
-            ? (new Parsedown())->setSafeMode(false)->text($model->message)
-            : '';
-
-        $view = new ViewResponse();
-
-        return $view->asTpl('', [
-            'title'       => ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME,
-            'heading'     => $model->title !== '' ? $model->title : '（无标题）',
-            'channel'     => $app?->name ?? '未知频道',
-            'priority'    => $model->priority,
-            'time'        => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
-            'bodyHtml'    => $bodyHtml,
-            'actionsJson' => json_encode(
-                $model->actions ?: new \stdClass(),
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
-            ),
-        ]);
-    }
-
-    /**
-     * 渲染 404 页（独立页，避免依赖模板编译与 pjax 那套）。
-     */
-    private function renderNotFound(): string
-    {
-        $title = '通知不存在 - ' . Application::SYSTEM_NAME;
-
-        return <<<HTML
-<!doctype html>
-<html lang="zh-CN" class="mdui-theme-auto">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <title>{$title}</title>
-    <link rel="stylesheet" href="/static/bundle?file=framework/libs/mdui.css,framework/base.css&type=css"/>
-    <style>
-        .nf-card    { max-width: 480px; padding: 2.5rem 2rem; }
-        .nf-icon    { font-size: 4rem; }
-    </style>
-</head>
-<body class="bg-background text-on-background min-h-screen d-flex items-center justify-center">
-    <mdui-card variant="elevated" class="nf-card text-center">
-        <mdui-icon name="error_outline" class="nf-icon text-error"></mdui-icon>
-        <h2 class="headline-medium mt-3 mb-2">通知不存在</h2>
-        <p class="body-medium text-on-surface-variant mb-4">链接已失效或通知已被删除。</p>
-        <mdui-button variant="filled" href="/">返回首页</mdui-button>
-    </mdui-card>
-    <script src="/static/bundle?file=framework/libs/mdui.global.min.js&type=js"></script>
-</body>
-</html>
-HTML;
     }
 }
