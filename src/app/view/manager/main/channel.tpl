@@ -52,6 +52,24 @@
                         helper="该应用专属，用于换取 access_token"
                 ></mdui-text-field>
             </div>
+            <div class="col-md6">
+                <mdui-text-field
+                        label="回调 Token"
+                        name="token"
+                        variant="outlined"
+                        helper="企业微信后台 “接收消息” 中的 Token"
+                ></mdui-text-field>
+            </div>
+            <div class="col-md6">
+                <mdui-text-field
+                        label="EncodingAESKey"
+                        name="aes_key"
+                        type="password"
+                        toggle-password
+                        variant="outlined"
+                        helper="43 字符 base64，需与企业微信后台一致"
+                ></mdui-text-field>
+            </div>
         </form>
     </mdui-dialog-form >
     <mdui-dialog-form label="测试通知" id="testDialog">
