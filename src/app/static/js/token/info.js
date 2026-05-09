@@ -4,8 +4,8 @@ window.pageLoadFiles = [
 window.pageOnLoad = function (loading) {
 
     function getLink() {
-        $.request.get("/sub/get",{},function (data) {
-            $("#linkInput").val(location.origin+"/sse/"+data.data);
+        $.request.get("/token/get",{},function (data) {
+            $("#linkInput").val(data.data);
         });
     }
 
@@ -19,7 +19,7 @@ window.pageOnLoad = function (loading) {
 
 
     $("#resetBtn").on("click",function () {
-        $.request.get("/sub/reset",{},function (data) {
+        $.request.get("/token/reset",{},function (data) {
             getLink();
             $.toaster.success("已重置");
         });
