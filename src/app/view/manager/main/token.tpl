@@ -37,35 +37,34 @@
            <mdui-icon name="rss_feed" class="refresh mr-2"></mdui-icon>
             <span > 订阅通知</span>
         </div>
-        <div class="col-xs12">
+        <div class="col-xs12 p-4 subscription-card">
             <!-- 订阅链接卡片 -->
-            <mdui-card class="p-4 subscription-card">
-                <!-- 订阅链接输入框（只读，可复制） -->
-                <mdui-text-field
-                        id="linkInput"
-                        class="subscription-link"
-                        label="订阅链接"
-                        value=""
-                        readonly
-                        suffix-icon="content_copy"
-                ></mdui-text-field>
+            <mdui-text-field
+                    id="linkInput"
+                    class="subscription-link"
+                    label="订阅链接"
+                    value=""
+                    readonly
+                    suffix-icon="content_copy"
+            ></mdui-text-field>
 
-                <!-- 复制按钮 -->
-                <mdui-button
-                        id="copyBtn"
-                        variant="outlined"
-                        icon="content_copy"
-                        aria-label="复制链接"
-                >复制</mdui-button>
+            <!-- 复制按钮 -->
+            <mdui-button
+                    id="copyBtn"
+                    variant="outlined"
+                    icon="content_copy"
+                    aria-label="复制链接"
+            >复制</mdui-button>
 
-                <!-- 重置按钮 -->
-                <mdui-button
-                        id="resetBtn"
-                        variant="tonal"
-                        icon="lock_reset"
-                        aria-label="重置链接"
-                >重置</mdui-button>
-            </mdui-card>
+            <!-- 重置按钮 -->
+            <mdui-button
+                    id="resetBtn"
+                    variant="tonal"
+                    icon="lock_reset"
+                    aria-label="重置链接"
+            >重置</mdui-button>
+
+
         </div>
 
 
