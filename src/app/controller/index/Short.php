@@ -8,6 +8,7 @@ use app\Application;
 use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
 use app\utils\Parsedown;
+
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
 use nova\plugin\tpl\ViewResponse;
@@ -30,7 +31,7 @@ class Short extends Controller
         $app = AppDao::getInstance()->id($model->app);
 
         $bodyHtml = $model->message !== ''
-            ? (new Parsedown())->setSafeMode(false)->text($model->message)
+            ? (new Parsedown())->setBreaksEnabled(true)->text($model->message)
             : '';
 
         $actions = $model->actions ?? [];
