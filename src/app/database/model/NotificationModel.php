@@ -25,6 +25,9 @@ class NotificationModel extends Model
         'success' => '🟢',
     ];
 
+    /** 企业文本里同一行两个 action 之间的分隔（emoji） */
+    private const string WECHAT_ACTION_SEPARATOR = ' 🔹 ';
+
     public function getUnique(): array
     {
         return ['short_url'];
@@ -38,14 +41,24 @@ class NotificationModel extends Model
     public function toWechat(): string
     {
         $emoji = $this->priorityEmoji();
-        $actions = [];
+        $links = [];
         foreach ($this->actions as $key => $value) {
-            $actions[] = "<a href='$value'>$key</a>";
+            $links[] = "<a href='$value'>$key</a>";
         }
-        $actionsText = implode("\n", $actions);
+        $actionRows = [];
+        for ($i = 0, $n = count($links); $i < $n; $i += 2) {
+            if ($i + 1 < $n) {
+                $actionRows[] = $links[$i] . self::WECHAT_ACTION_SEPARATOR . $links[$i + 1];
+            } else {
+                $actionRows[] = $links[$i];
+            }
+        }
+        $actionsText = implode("\n", $actionRows);
         $url = $this->viewUrl();
+        $hasActions = $this->actions !== [];
 
-        $markdown = <<<EOF
+        if ($hasActions) {
+            $markdown = <<<EOF
 # $emoji $this->title
 ---
 $this->message
@@ -54,6 +67,14 @@ $actionsText
 ---
  <a href='$url'>查看原文</a>
 EOF;
+        } else {
+            $markdown = <<<EOF
+# $emoji $this->title
+---
+$this->message
+ <a href='$url'>查看原文</a>
+EOF;
+        }
 
         return $this->emojiMarkdownToText($markdown);
     }
@@ -146,7 +167,7 @@ HTML;
         $md = preg_replace('/`(.*?)`/', '💻『 $1 』', $md);
 
         // 7. 分割线 (一串星星)
-        $md = preg_replace('/^---$/m', '────────────────', $md);
+        $md = preg_replace('/^---$/m', '──────────────', $md);
 
         // 8. 链接与图片
         $md = preg_replace('/\!\[(.*?)\]\((.*?)\)/', '🖼️ [图片: $1]', $md);
