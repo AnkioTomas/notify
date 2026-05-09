@@ -45,17 +45,26 @@ class Notification extends BaseController
                 ? $parsedown->text($model->message)
                 : '';
 
+            $actionsEncoded = '';
+            if ($actions !== []) {
+                $json = json_encode($actions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
+                if ($json !== false) {
+                    $actionsEncoded = rawurlencode($json);
+                }
+            }
+
             $data[] = [
-                'id'         => $model->id,
-                'short_url'  => $model->short_url,
-                'title'      => $model->title,
-                'message'    => $model->message,
-                'messageHtml' => $messageHtml,
-                'priority'   => $model->priority,
-                'actions'    => $actions === [] ? new \stdClass() : $actions,
-                'channel'    => $app?->name ?? '未知频道',
-                'time'       => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
-                'detailHref' => '/' . $model->short_url,
+                'id'              => $model->id,
+                'short_url'       => $model->short_url,
+                'title'           => $model->title,
+                'message'         => $model->message,
+                'messageHtml'     => $messageHtml,
+                'priority'        => $model->priority,
+                'actions'         => $actions === [] ? new \stdClass() : $actions,
+                'actionsEncoded'  => $actionsEncoded,
+                'channel'         => $app?->name ?? '未知频道',
+                'time'            => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
+                'detailHref'      => '/' . $model->short_url,
             ];
         }
 
