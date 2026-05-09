@@ -18,12 +18,13 @@
            <mdui-icon name="notifications" class="refresh mr-2"></mdui-icon>
             <span > 通知渠道</span>
         </div>
+        <div class="col-xs12 d-flex mb-2">
+            <mdui-button icon="add" id="addApp">创建渠道</mdui-button>
+            <div style="flex-grow: 1"></div>
+            <mdui-button-icon icon="refresh" id="refresh"></mdui-button-icon>
+
+        </div>
         <div class="col-xs12">
-            <mdui-card class="p-4 w-100 items-center "  style="display: flex">
-                <mdui-button icon="add" id="addApp">创建渠道</mdui-button>
-                <div style="flex-grow: 1"></div>
-                <mdui-button-icon icon="refresh" id="refresh"></mdui-button-icon>
-            </mdui-card>
 
             <!-- 数据表格卡片 -->
             <div id="dataTable" class="table-card mt-2 w-100" ></div>
@@ -50,24 +51,6 @@
                         toggle-password
                         variant="outlined"
                         helper="该应用专属，用于换取 access_token"
-                ></mdui-text-field>
-            </div>
-            <div class="col-md6">
-                <mdui-text-field
-                        label="回调 Token"
-                        name="token"
-                        variant="outlined"
-                        helper="企业微信后台 “接收消息” 中的 Token"
-                ></mdui-text-field>
-            </div>
-            <div class="col-md6">
-                <mdui-text-field
-                        label="EncodingAESKey"
-                        name="aes_key"
-                        type="password"
-                        toggle-password
-                        variant="outlined"
-                        helper="43 字符 base64，需与企业微信后台一致"
                 ></mdui-text-field>
             </div>
         </form>

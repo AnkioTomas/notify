@@ -8,6 +8,7 @@ use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
 use app\database\model\NotificationModel;
 
+use app\utils\WechatException;
 use app\utils\WorkWechatApp;
 
 use function nova\framework\config;
@@ -78,7 +79,11 @@ class Main extends Controller
 
         $toUser = config('work_wechat.to_user');
         if (!empty($toUser) && $app->secret !== '' && $app->agent_id !== '') {
-            WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
+            try {
+                WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
+            } catch (WechatException $e) {
+                return Response::asJson(["msg" => $e->getMessage(), "code" => 500], 200);
+            }
         }
 
         return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);

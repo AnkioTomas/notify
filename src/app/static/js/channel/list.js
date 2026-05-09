@@ -36,8 +36,6 @@ window.pageOnLoad = function (loading) {
                     formatter: function (value, row, index) {
                         return `
 <mdui-button-icon data-index="${index}" icon="science" class="action-test" title="测试发布"></mdui-button-icon>
-<mdui-button-icon data-index="${index}" icon="content_copy" class="action-copy" title="复制发布地址"></mdui-button-icon>
-<mdui-button-icon data-index="${index}" icon="callback" class="action-hook" title="复制 Hook 地址"></mdui-button-icon>
 <mdui-button-icon data-index="${index}" icon="edit" class="action-editor" title="编辑"></mdui-button-icon>
 <mdui-button-icon  data-index="${index}" icon="delete" class="action-delete" title="删除"></mdui-button-icon>`;
                     },
@@ -82,16 +80,6 @@ window.pageOnLoad = function (loading) {
         let row = database.getRow($(this).data("index"));
         dialog.open();
         dialog.setValue(row);
-    }).on('click', '.action-copy', function () {
-        let row = database.getRow($(this).data("index"));
-        let uri = location.origin + "/" + encodeURIComponent(row.short_name);
-        $.copy(uri);
-        $.toaster.success("已复制发布地址");
-    }).on('click', '.action-hook', function () {
-        let row = database.getRow($(this).data("index"));
-        let uri = location.origin + "/hook/" + encodeURIComponent(row.short_name);
-        $.copy(uri);
-        $.toaster.success("已复制 Hook 地址");
     }).on('click', '.action-test', function () {
         let row = database.getRow($(this).data("index"));
 
@@ -138,7 +126,13 @@ window.pageOnLoad = function (loading) {
                 'X-Actions': encodeURIComponent(xActions),
             });
             $.request.postForm(data.url, data.message, (response) => {
-                $.toaster.success("测试通知发送成功");
+                if(response.code !== 200){
+                    $.toaster.error(response.msg);
+                }else{
+                    $.toaster.success("测试通知发送成功");
+                    testDialog.close();
+                }
+
             });
         });
     });
