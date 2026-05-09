@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <enabled-global>
-      <option value="PHP自动格式化" />
+      <option value="php格式化" />
     </enabled-global>
   </component>
 </project>
