@@ -10,7 +10,7 @@ use nova\framework\http\Response;
 
 class Wechat extends BaseController
 {
-    private const array FIELDS = ['corpid', 'to_user'];
+    private const array FIELDS = ['corpid', 'to_user','token','aes_key'];
 
     /**
      * 同一路径承载查询与保存：GET 取配置，POST 保存配置。

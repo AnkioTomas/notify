@@ -45,6 +45,23 @@
                             required
                     ></mdui-text-field>
 
+                    <mdui-text-field
+                            name="token"
+                            label="接收消息服务器配置的Token"
+                            variant="outlined"
+                            clearable
+                            required
+                    ></mdui-text-field>
+
+                    <mdui-text-field
+                            name="aes_key"
+                            label="接收消息服务器配置的aesKey"
+
+                            variant="outlined"
+                            clearable
+                            required
+                    ></mdui-text-field>
+
                     <div>
                         <mdui-button type="submit" icon="save">保存</mdui-button>
                     </div>

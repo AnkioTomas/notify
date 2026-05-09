@@ -38,15 +38,18 @@ class Main extends Controller
         }
         // 校验授权
 
-        $title = $headers['X-Title'] ?? '';
+        $title = rawurldecode($headers['X-Title'] ?? '');
 
         $priority = $headers['X-Priority'] ?? 'info';
-        $actions = $headers['X-Actions'] ?? '';
+        $actions = rawurldecode($headers['X-Actions'] ?? '');
         $message = $this->request->raw() ?? '';
         $items = explode(';', trim($actions, ';'));
 
         $a  = [];
         foreach ($items as $item) {
+            if (empty($item)) {
+                continue;
+            }
             [$name,$url] = explode(',', $item);
             $a[trim($name)] = trim($url);
         }

@@ -44,6 +44,8 @@ class Application extends App
             ->get("/wechat", route("manager", "main", "wechat"))
             ->getOrPost("/wechat/config", route("manager", "wechat", "config"))
 
+            ->getOrPost("/hook", route("index", "hook", "index"))
+
             ->post("/{channel}", route("index", "main", "publish"))
             ->get("/{short}", route("index", "main", "short"))
         ;
