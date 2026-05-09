@@ -52,7 +52,7 @@ class Main extends BaseController
                 ],
                 [
                     "title" => "企业微信",
-                    "icon" => "rss_feed",
+                    "icon" => "forum",
                     "url" => "/wechat",
                     "pjax" => true
                 ],
