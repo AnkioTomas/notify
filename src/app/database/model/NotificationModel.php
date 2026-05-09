@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\database\model;
 
-use app\utils\Parsedown;
 use nova\framework\core\Context;
 use nova\plugin\orm\object\Model;
 
@@ -77,44 +76,6 @@ EOF;
         }
 
         return $this->emojiMarkdownToText($markdown);
-    }
-
-    public function toHtml(): string
-    {
-        $emoji    = $this->priorityEmoji();
-        $priority = $this->escape($this->priority);
-        $title    = $this->escape($this->title);
-        $body     = (new Parsedown())->setSafeMode(false)->text($this->message);
-        $url      = $this->escape($this->viewUrl());
-        $time     = $this->t > 0 ? date('Y-m-d H:i:s', $this->t) : '';
-
-        $actions = '';
-        if ($this->actions !== []) {
-            $items = '';
-            foreach ($this->actions as $label => $href) {
-                $l = $this->escape((string)$label);
-                $h = $this->escape((string)$href);
-                $items .= "<a class=\"notify-action\" href=\"$h\" target=\"_blank\" rel=\"noopener noreferrer\">$l</a>";
-            }
-            $actions = "<div class=\"notify-actions\">$items</div>";
-        }
-
-        $timeHtml = $time === '' ? '' : "<time class=\"notify-time\">$time</time>";
-
-        return <<<HTML
-<article class="notify notify-$priority">
-  <header class="notify-header">
-    <span class="notify-emoji" aria-hidden="true">$emoji</span>
-    <h2 class="notify-title">$title</h2>
-  </header>
-  <div class="notify-body">$body</div>
-  $actions
-  <footer class="notify-footer">
-    $timeHtml
-    <a class="notify-view" href="$url">查看原文</a>
-  </footer>
-</article>
-HTML;
     }
 
     private function priorityEmoji(): string
