@@ -10,24 +10,28 @@ window.pageOnLoad = function (loading) {
             uri: "/channel/list",
             columns: [
                 {
-                    field: "channel",
-                    name: "渠道名称",
+                    field: "name",
+                    name: "显示名称",
+                    align: "center",
+                    width: 140,
+                },
+                {
+                    field: "short_name",
+                    name: "短标识",
+                    align: "center",
+                    width: 140,
+                },
+                {
+                    field: "agent_id",
+                    name: "AgentId",
                     align: "center",
                     width: 120,
                 },
                 {
-                    field: "token",
-                    name: "渠道Token",
-                    align: "center",
-                    width: "auto",
-                },
-
-
-                {
                     field: "id",
                     name: "操作",
                     align: "center",
-                    width: 200, //列宽度
+                    width: 200,
                     fixed: "right",
                     formatter: function (value, row, index) {
                         return `
@@ -39,14 +43,11 @@ window.pageOnLoad = function (loading) {
                 },
             ],
             mobile: true,
-            lineHeight: "auto", //表格行高，默认"auto
-            height: "auto", //表格高度
+            lineHeight: "auto",
+            height: "auto",
             events: {
                 onRowClick: function (row, rowIndex) {
                 },
-                // row: 当前行数据
-                // rowIndex: 当前行索引
-                // colIndex: 当前列索引
                 onCellClick: function (row, rowIndex, colIndex, colName) {
 
                 },
@@ -80,21 +81,20 @@ window.pageOnLoad = function (loading) {
         let row = database.getRow($(this).data("index"));
         dialog.open();
         dialog.setValue(row);
-        }).on('click', '.action-copy', function () {
+    }).on('click', '.action-copy', function () {
         let row = database.getRow($(this).data("index"));
-        let uri = location.origin + "/" + encodeURI(row.channel) + "/" + row.token;
+        let uri = location.origin + "/" + encodeURIComponent(row.short_name);
         $.copy(uri);
-        $.toaster.success("已复制链接");
+        $.toaster.success("已复制发布地址");
     }).on('click', '.action-test', function () {
         let row = database.getRow($(this).data("index"));
-        
+
         testDialog.open();
-        // 设置默认值和URL
         testDialog.setValue({
-            url: `${location.origin}/${encodeURI(row.channel)}/${row.token}`,
+            url: `${location.origin}/${encodeURIComponent(row.short_name)}`,
             title: "测试通知",
             message: "这是一条测试消息",
-            type: "info",
+            priority: "info",
             actionLeftText: "",
             actionLeftUrl: "",
             actionRightText: "",
@@ -113,21 +113,27 @@ window.pageOnLoad = function (loading) {
         database.reload({}, true);
     });
 
-    // 测试对话框提交处理
-    testDialog.submit(null,(data) => {
-        // 使用新的header格式发送测试请求
-        const url = data.url;
-        const headers = {
-            'Title': encodeURIComponent(data.title),
-            'Type': encodeURIComponent(data.type),
-            'Action-Left-Text': encodeURIComponent(data.actionLeftText),
-            'Action-Left-Url': encodeURIComponent(data.actionLeftUrl),
-            'Action-Right-Text': encodeURIComponent(data.actionRightText),
-            'Action-Right-Url': encodeURIComponent(data.actionRightUrl),
-        };
-        $.request.setHeaders(headers)
-        $.request.postForm(url, data.message, (response) => {
-            $.toaster.success("测试通知发送成功");
+    testDialog.submit(null, (data) => {
+        const parts = [];
+        if (data.actionLeftText && data.actionLeftUrl) {
+            parts.push(`${data.actionLeftText},${data.actionLeftUrl}`);
+        }
+        if (data.actionRightText && data.actionRightUrl) {
+            parts.push(`${data.actionRightText},${data.actionRightUrl}`);
+        }
+        const xActions = parts.join(";");
+
+        $.request.get("/token/get", {}, (authResp) => {
+            const auth = authResp.data;
+            $.request.setHeaders({
+                'Authorization': auth,
+                'X-Title': data.title,
+                'X-Priority': data.priority || 'info',
+                'X-Actions': xActions,
+            });
+            $.request.postForm(data.url, data.message, (response) => {
+                $.toaster.success("测试通知发送成功");
+            });
         });
     });
     window.pageOnUnLoad = function () {

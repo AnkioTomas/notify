@@ -34,14 +34,20 @@
         <form class="row col-space16 " >
             <mdui-text-field name="id" type="hidden"></mdui-text-field>
             <div class="col-md12">
-                <mdui-text-field label="渠道名称" name="channel" variant="outlined" required></mdui-text-field>
+                <mdui-text-field label="显示名称" name="name" variant="outlined" required></mdui-text-field>
+            </div>
+            <div class="col-md12">
+                <mdui-text-field label="URL 短标识" name="short_name" variant="outlined" required></mdui-text-field>
+            </div>
+            <div class="col-md12">
+                <mdui-text-field label="企业微信 AgentId" name="agent_id" variant="outlined"></mdui-text-field>
             </div>
         </form>
     </mdui-dialog-form >
     <mdui-dialog-form label="测试通知" id="testDialog">
         <form class="row col-space16">
             <div class="col-md12">
-            <mdui-text-field name="url" variant="outlined" readonly></mdui-text-field>
+            <mdui-text-field name="url" label="发布 URL" variant="outlined" readonly></mdui-text-field>
             </div>
             <div class="col-md12">
                 <mdui-text-field label="消息标题" name="title" variant="outlined" required></mdui-text-field>
@@ -50,8 +56,7 @@
                 <mdui-text-field label="消息内容" name="message" variant="outlined" rows="3" required></mdui-text-field>
             </div>
             <div class="col-md6">
-                <mdui-select label="消息类型" name="type" variant="outlined">
-                    <mdui-menu-item value="default">默认</mdui-menu-item>
+                <mdui-select label="优先级" name="priority" variant="outlined">
                     <mdui-menu-item value="info">信息</mdui-menu-item>
                     <mdui-menu-item value="warning">警告</mdui-menu-item>
                     <mdui-menu-item value="error">错误</mdui-menu-item>
@@ -76,6 +81,5 @@
 </div>
 
 <script id="script" src="/static/js/channel/list.js?v={$__v}"></script>
-
 
 

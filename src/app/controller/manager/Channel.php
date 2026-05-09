@@ -14,16 +14,38 @@ class Channel extends BaseController
     {
         $where = [];
 
-        $page = $this->request->get("page", 1);
-        $size = $this->request->get("pageSize", 10);
+        $page = (int)$this->request->get("page", 1);
+        $size = (int)$this->request->get("pageSize", 10);
 
-        $data = AppDao::getInstance()->getAll([], $where, $page, $size, "id");
-        $total = $data['total'];
-        $data = $data['data'] ?: [];
+        $result = AppDao::getInstance()->getAll([], $where, $page, $size, "id");
+        $total = $result['total'];
+        $rows = $result['data'] ?: [];
+
+        $data = [];
+        foreach ($rows as $row) {
+            if ($row instanceof AppModel) {
+                $data[] = [
+                    'id'         => $row->id,
+                    'name'       => $row->name,
+                    'short_name' => $row->short_name,
+                    'agent_id'   => $row->agent_id,
+                ];
+                continue;
+            }
+            if (is_array($row)) {
+                $data[] = [
+                    'id'         => (int)($row['id'] ?? 0),
+                    'name'       => (string)($row['name'] ?? ''),
+                    'short_name' => (string)($row['short_name'] ?? ''),
+                    'agent_id'   => (string)($row['agent_id'] ?? ''),
+                ];
+            }
+        }
+
         return Response::asJson([
-            'code' => 200,
+            'code'  => 200,
             'count' => $total,
-            'data' => $data,
+            'data'  => $data,
         ]);
     }
 
