@@ -39,8 +39,18 @@
             <div class="col-md12">
                 <mdui-text-field label="URL 短标识" name="short_name" variant="outlined" required></mdui-text-field>
             </div>
-            <div class="col-md12">
+            <div class="col-md6">
                 <mdui-text-field label="企业微信 AgentId" name="agent_id" variant="outlined"></mdui-text-field>
+            </div>
+            <div class="col-md6">
+                <mdui-text-field
+                        label="应用 Secret"
+                        name="secret"
+                        type="password"
+                        toggle-password
+                        variant="outlined"
+                        helper="该应用专属，用于换取 access_token"
+                ></mdui-text-field>
             </div>
         </form>
     </mdui-dialog-form >

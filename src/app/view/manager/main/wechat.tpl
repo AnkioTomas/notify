@@ -37,18 +37,9 @@
                     ></mdui-text-field>
 
                     <mdui-text-field
-                            name="secret"
-                            label="应用 Secret"
-                            type="password"
-                            toggle-password
-                            variant="outlined"
-                            clearable
-                            required
-                    ></mdui-text-field>
-
-                    <mdui-text-field
                             name="to_user"
                             label="接收人 UserID（多个用 | 分隔，填 @all 推送给全员）"
+                            helper="应用 Secret / AgentId 在“通知渠道”里按渠道单独配置"
                             variant="outlined"
                             clearable
                             required

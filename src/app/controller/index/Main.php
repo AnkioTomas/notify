@@ -74,10 +74,8 @@ class Main extends Controller
         // 发布到微信
 
         $toUser = config('work_wechat.to_user');
-        if ($toUser !== null) {
-
-            $wechat = $model->toWechat();
-            WorkWechatApp::getInstance()->sendText($app->agent_id, $wechat, $toUser);
+        if (!empty($toUser) && $app->secret !== '' && $app->agent_id !== '') {
+            WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
         }
 
         return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);
