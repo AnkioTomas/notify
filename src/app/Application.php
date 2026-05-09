@@ -41,6 +41,9 @@ class Application extends App
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))
 
+            ->get("/notifications/list", route("manager", "notification", "list"))
+            ->get("/notifications", route("manager", "main", "notifications"))
+
             ->get("/wechat", route("manager", "main", "wechat"))
             ->getOrPost("/wechat/config", route("manager", "wechat", "config"))
 

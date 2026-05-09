@@ -30,6 +30,24 @@ class NotificationDao extends Dao
         return $this->find(null, ['short_url' => $url]);
     }
 
+    /**
+     * 后台分页列表（按发布时间倒序）
+     *
+     * @return array{total: int, data: NotificationModel[]}
+     */
+    public function paginateLatest(int $page, int $pageSize): array
+    {
+        $page = max(1, $page);
+        $pageSize = max(1, min(50, $pageSize));
+
+        $result = $this->getAll([], [], $page, $pageSize, 't');
+
+        return [
+            'total' => (int)($result['total'] ?? 0),
+            'data'  => $result['data'] ?? [],
+        ];
+    }
+
     private function ensureShortUrl(): string
     {
         $shortUrl = substr(md5(uuid()), 8, 6);

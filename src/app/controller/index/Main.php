@@ -21,16 +21,6 @@ use nova\plugin\tpl\ViewResponse;
 class Main extends Controller
 {
     /**
-     * priority -> M3 角色色（直接对接 base.css 的 utility class）。
-     * 4 种 priority 映射到 4 种 M3 角色色，无需任何自定义颜色。
-     */
-    private const array PRIORITY_META = [
-        'info'    => ['label' => '信息', 'icon' => 'info',         'class' => 'primary'],
-        'warning' => ['label' => '警告', 'icon' => 'warning',      'class' => 'tertiary'],
-        'error'   => ['label' => '错误', 'icon' => 'error',        'class' => 'error'],
-        'success' => ['label' => '成功', 'icon' => 'check_circle', 'class' => 'secondary'],
-    ];
-    /**
      * 发布通知（支持直接header映射和ntfy兼容）
      * POST /{channel}
      */
@@ -110,8 +100,7 @@ class Main extends Controller
             return Response::asHtml($this->renderNotFound(), [], 404);
         }
 
-        $app  = AppDao::getInstance()->id($model->app);
-        $meta = self::PRIORITY_META[$model->priority] ?? self::PRIORITY_META['info'];
+        $app = AppDao::getInstance()->id($model->app);
 
         $bodyHtml = $model->message !== ''
             ? (new Parsedown())->setSafeMode(false)->text($model->message)
@@ -120,15 +109,16 @@ class Main extends Controller
         $view = new ViewResponse();
 
         return $view->asTpl('', [
-            'title'         => ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME,
-            'notifyTitle'   => $model->title !== '' ? $model->title : '（无标题）',
-            'channelName'   => $app?->name ?? '未知频道',
-            'bodyHtml'      => $bodyHtml,
-            'priorityLabel' => $meta['label'],
-            'priorityIcon'  => $meta['icon'],
-            'priorityClass' => $meta['class'],
-            'time'          => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
-            'actions'       => $model->actions,
+            'title'       => ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME,
+            'heading'     => $model->title !== '' ? $model->title : '（无标题）',
+            'channel'     => $app?->name ?? '未知频道',
+            'priority'    => $model->priority,
+            'time'        => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
+            'bodyHtml'    => $bodyHtml,
+            'actionsJson' => json_encode(
+                $model->actions ?: new \stdClass(),
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG
+            ),
         ]);
     }
 

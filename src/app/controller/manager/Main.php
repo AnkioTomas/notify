@@ -33,6 +33,12 @@ class Main extends BaseController
         if (!$this->request->isPjax()) {
             $menu =  [
                 [
+                    "title" => "通知列表",
+                    "icon" => "campaign",
+                    "url" => "/notifications",
+                    "pjax" => true
+                ],
+                [
                     "title" => "通知渠道",
                     "icon" => "notifications",
                     "url" => "/channel",
@@ -75,6 +81,11 @@ class Main extends BaseController
     public function index(): Response
     {
         return Response::asRedirect("/channel");
+    }
+
+    public function notifications(): Response
+    {
+        return $this->viewResponse->asTpl();
     }
 
     public function channel(): Response
