@@ -13,7 +13,7 @@
 </style>
 
 <div id="container" class="container">
-    <div class="row">
+    <div  class="row col-space16">
         <div class="col-xs12 title-large center-vertical mb-4">
            <mdui-icon name="notifications" class="refresh mr-2"></mdui-icon>
             <span > 通知渠道</span>
