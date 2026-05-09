@@ -70,12 +70,10 @@
 
 
     </div>
-    </div>
-
 
 </div>
 
-<script id="script" src="/static/js/sub/info.js?v={$__v}"></script>
+<script id="script" src="/static/js/token/info.js?v={$__v}"></script>
 
 
 

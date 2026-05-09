@@ -6,7 +6,6 @@ namespace app\controller\manager;
 
 use app\Application;
 use nova\framework\http\Response;
-use nova\plugin\cookie\Session;
 use nova\plugin\login\manager\PwdLoginManager;
 use nova\plugin\login\manager\SSOLoginManager;
 use nova\plugin\tpl\ViewResponse;
@@ -105,9 +104,4 @@ class Main extends BaseController
         return $this->viewResponse->asTpl();
     }
 
-    public function logout(): Response
-    {
-        Session::getInstance()->destroy();
-        return $this->redirectTo("/");
-    }
 }

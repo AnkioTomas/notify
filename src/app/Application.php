@@ -33,9 +33,10 @@ class Application extends App
             ->get("/sso", route("manager", "main", "sso"))
             ->get("/channel", route("manager", "main", "channel"))
 
-            ->get("/sub", route("manager", "main", "sub"))
-            ->get("/sub/get", route("manager", "sub", "get"))
-            ->get("/sub/reset", route("manager", "sub", "reset"))
+            ->get("/token", route("manager", "main", "token"))
+            ->get("/token/get", route("manager", "token", "get"))
+            ->get("/token/reset", route("manager", "token", "reset"))
+
             ->get("/channel/list", route("manager", "channel", "list"))
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))
@@ -43,9 +44,6 @@ class Application extends App
             ->get("/wechat", route("manager", "main", "wechat"))
             ->getOrPost("/wechat/config", route("manager", "wechat", "config"))
 
-            ->get("/list/{token}", route("index", "main", "list"))
-            ->get("/sse/{token}", route("index", "main", "sse"))
-            ->get("/read/{id}/{token}", route("index", "main", "read"))
             ->post("/{channel}", route("index", "main", "publish"))
             ->get("/{short}", route("index", "main", "short"))
         ;
