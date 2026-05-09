@@ -39,9 +39,6 @@ class NotifyCard extends HTMLElement {
     set time(v) { this.setAttribute('time', v); }
     get time()  { return this.getAttribute('time') || ''; }
 
-    set backHref(v) { this.setAttribute('back-href', v); }
-    get backHref()  { return this.getAttribute('back-href') || ''; }
-
     set body(v) { this._p.body = v; if (this.isConnected) this.#paint(); }
     get body()  { return this._p.body; }
 
@@ -59,66 +56,32 @@ class NotifyCard extends HTMLElement {
         const meta = NotifyCard.#priorityMeta[this.priority] || NotifyCard.#priorityMeta.info;
         const cls = meta.cls;
 
-        const tones = ['primary', 'secondary', 'tertiary', 'error'];
-        const paletteCss = tones
-            .map(
-                (t) =>
-                    `
-.text-${t} {
-    color: rgba(var(--mdui-color-${t})) !important;
-}
-.bg-${t} {
-    background-color: rgba(var(--mdui-color-${t})) !important;
-}
-.text-on-${t} {
-    color: rgba(var(--mdui-color-on-${t})) !important;
-}
-`
-            )
-            .join('\n');
-        const actionToneCss = tones
-            .map(
-                (t) =>
-                    `
-.notify-actions--${t} mdui-button::part(button) {
-    background-color: rgba(var(--mdui-color-${t})) !important;
-    color: rgba(var(--mdui-color-on-${t})) !important;
-}
-.notify-actions--${t} mdui-button:focus-visible::part(button) {
-    outline: 2px solid rgba(var(--mdui-color-${t}));
-    outline-offset: 2px;
-}
-`
-            )
-            .join('\n');
+        const tones = new Set(['primary', 'secondary', 'tertiary', 'error']);
 
         const act = this.actions;
         const rows = act && typeof act === 'object' ? Object.entries(act) : [];
-        const tone = tones.includes(cls) ? cls : 'primary';
+        const tone = tones.has(cls) ? cls : 'primary';
         const actionsHtml =
             rows.length === 0
                 ? ''
-                : `<div class="d-flex flex-wrap gap-2 mt-3 notify-actions notify-actions--${tone}">${rows
+                : `<div class="notify-actions notify-actions--${tone}">${rows
                       .map(
                           ([label, href]) =>
-                              `<mdui-button variant="filled" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
+                              `<mdui-button class="notify-action-btn" variant="filled" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
                       )
                       .join('')}</div>`;
 
         const ch = this.channel;
         const channelLine = ch
-            ? `<span class="d-inline-flex items-center body-small text-on-surface-variant"><mdui-icon name="forum" class="notify-icon-sm mr-1"></mdui-icon>${ch}</span>`
+            ? `<span class="notify-meta-item notify-meta-item--channel"><mdui-icon name="forum" class="notify-icon-sm"></mdui-icon>${ch}</span>`
             : '';
 
         const footerT = this.time
-            ? `<span class="d-inline-flex items-center body-small text-on-surface-variant"><mdui-icon name="schedule" class="notify-icon-sm mr-1"></mdui-icon>${this.time}</span>`
-            : '';
-        const footerB = this.backHref
-            ? `<a href="${this.backHref}" class="d-inline-flex items-center no-underline text-on-surface-variant"><mdui-icon name="home" class="notify-icon-sm mr-1"></mdui-icon>返回首页</a>`
+            ? `<span class="notify-meta-item notify-meta-item--time"><mdui-icon name="schedule" class="notify-icon-sm"></mdui-icon>${this.time}</span>`
             : '';
         const footerHtml =
-            footerT || footerB
-                ? `<mdui-divider class="my-3"></mdui-divider><div class="d-flex flex-wrap items-center gap-3 body-small text-on-surface-variant">${footerT}<div class="flex-1"></div>${footerB}</div>`
+            footerT || ''
+                ? `<div class="notify-footer">${footerT}</div>`
                 : '';
 
         const bodyHtml = this._p.body ?? this._slot.body ?? '';
@@ -133,125 +96,34 @@ class NotifyCard extends HTMLElement {
     box-sizing: border-box;
 }
 
-h1 {
+.notify-title {
     margin-top: 0;
-}
-
-.headline-medium {
     font-size: var(--mdui-typescale-headline-medium-size);
     line-height: var(--mdui-typescale-headline-medium-line-height);
     letter-spacing: var(--mdui-typescale-headline-medium-tracking);
-    font-weight: var(--mdui-typescale-headline-medium-weight);
+    font-weight: 700;
+    overflow-wrap: break-word;
+    margin-bottom: 1rem;
 }
 
-.body-large {
+.notify-body {
     font-size: var(--mdui-typescale-body-large-size);
     line-height: var(--mdui-typescale-body-large-line-height);
     letter-spacing: var(--mdui-typescale-body-large-tracking);
     font-weight: var(--mdui-typescale-body-large-weight);
-}
-
-.body-small {
-    font-size: var(--mdui-typescale-body-small-size);
-    line-height: var(--mdui-typescale-body-small-line-height);
-    letter-spacing: var(--mdui-typescale-body-small-tracking);
-    font-weight: var(--mdui-typescale-body-small-weight);
-}
-
-.font-medium {
-    font-weight: 500 !important;
-}
-
-.font-bold {
-    font-weight: 700 !important;
-}
-
-${paletteCss}
-
-.text-on-surface {
     color: rgba(var(--mdui-color-on-surface)) !important;
 }
 
-.text-on-surface-variant {
-    color: rgba(var(--mdui-color-on-surface-variant)) !important;
-}
-
-.d-flex {
-    display: flex !important;
-}
-
-.d-inline-flex {
-    display: inline-flex !important;
-}
-
-.flex-wrap {
-    flex-wrap: wrap !important;
-}
-
-.items-center {
-    align-items: center !important;
-}
-
-.flex-1 {
-    flex: 1 1 0% !important;
-}
-
-.gap-2 {
-    gap: 0.5rem !important;
-}
-
-.gap-3 {
-    gap: 0.75rem !important;
-}
-
-.w-full {
-    width: 100% !important;
-}
-
-.mr-1 {
-    margin-right: 0.25rem !important;
-}
-
-.mt-3 {
-    margin-top: 1rem !important;
-}
-
-.mb-3 {
-    margin-bottom: 1rem !important;
-}
-
-.my-3 {
-    margin-top: 1rem !important;
-    margin-bottom: 1rem !important;
-}
-
-.p-3 {
-    padding: 1rem !important;
-}
-
-.break-words {
-    overflow-wrap: break-word !important;
-}
-
-.no-underline {
-    text-decoration: none !important;
-}
-
-.badge {
+.notify-status-badge {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
     font-weight: 500;
-}
-
-.badge-sm {
+    text-decoration: none;
+    border-radius: 9999px;
     padding: 0.37rem 0.55rem;
     font-size: var(--mdui-typescale-label-small-size);
     line-height: var(--mdui-typescale-label-small-line-height);
-}
-
-.rounded-full {
-    border-radius: 9999px !important;
 }
 
 .notify-card {
@@ -260,6 +132,7 @@ ${paletteCss}
     max-width: none;
     border-left: 6px solid rgba(var(--mdui-color-primary));
     transition: background-color 0.2s ease;
+    padding: 1rem;
 }
 
 .notify-tertiary {
@@ -290,7 +163,41 @@ ${paletteCss}
     background-color: rgba(var(--mdui-color-error-container));
 }
 
-${actionToneCss}
+.notify-actions--primary mdui-button::part(button) {
+    background-color: rgba(var(--mdui-color-primary)) !important;
+    color: rgba(var(--mdui-color-on-primary)) !important;
+}
+.notify-actions--primary mdui-button:focus-visible::part(button) {
+    outline: 2px solid rgba(var(--mdui-color-primary));
+    outline-offset: 2px;
+}
+
+.notify-actions--secondary mdui-button::part(button) {
+    background-color: rgba(var(--mdui-color-secondary)) !important;
+    color: rgba(var(--mdui-color-on-secondary)) !important;
+}
+.notify-actions--secondary mdui-button:focus-visible::part(button) {
+    outline: 2px solid rgba(var(--mdui-color-secondary));
+    outline-offset: 2px;
+}
+
+.notify-actions--tertiary mdui-button::part(button) {
+    background-color: rgba(var(--mdui-color-tertiary)) !important;
+    color: rgba(var(--mdui-color-on-tertiary)) !important;
+}
+.notify-actions--tertiary mdui-button:focus-visible::part(button) {
+    outline: 2px solid rgba(var(--mdui-color-tertiary));
+    outline-offset: 2px;
+}
+
+.notify-actions--error mdui-button::part(button) {
+    background-color: rgba(var(--mdui-color-error)) !important;
+    color: rgba(var(--mdui-color-on-error)) !important;
+}
+.notify-actions--error mdui-button:focus-visible::part(button) {
+    outline: 2px solid rgba(var(--mdui-color-error));
+    outline-offset: 2px;
+}
 
 .notify-icon-sm {
     font-size: 1rem;
@@ -367,11 +274,118 @@ ${actionToneCss}
     list-style: revert;
     margin: 0.15rem 0;
 }
+
+.notify-card--primary {
+    background-color: rgba(var(--mdui-color-primary-container),0.5);
+    border-left-color: rgba(var(--mdui-color-primary));
+}
+.notify-card--secondary {
+    background-color: rgba(var(--mdui-color-secondary-container));
+    border-left-color: rgba(var(--mdui-color-secondary));
+}
+.notify-card--tertiary {
+    background-color: rgba(var(--mdui-color-tertiary-container));
+    border-left-color: rgba(var(--mdui-color-tertiary));
+}
+.notify-card--error {
+    background-color: rgba(var(--mdui-color-error-container));
+    border-left-color: rgba(var(--mdui-color-error));
+}
+
+.notify-status-badge--primary {
+    background-color: rgba(var(--mdui-color-primary));
+    color: rgba(var(--mdui-color-on-primary));
+}
+.notify-status-badge--secondary {
+    background-color: rgba(var(--mdui-color-secondary));
+    color: rgba(var(--mdui-color-on-secondary));
+}
+.notify-status-badge--tertiary {
+    background-color: rgba(var(--mdui-color-tertiary));
+    color: rgba(var(--mdui-color-on-tertiary));
+}
+.notify-status-badge--error {
+    background-color: rgba(var(--mdui-color-error));
+    color: rgba(var(--mdui-color-on-error));
+}
+
+.notify-title--primary {
+    color: rgba(var(--mdui-color-primary));
+}
+.notify-title--secondary {
+    color: rgba(var(--mdui-color-secondary));
+}
+.notify-title--tertiary {
+    color: rgba(var(--mdui-color-tertiary));
+}
+.notify-title--error {
+    color: rgba(var(--mdui-color-error));
+}
+
+.notify-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.notify-header-spacer {
+    flex: 1 1 0%;
+}
+
+.notify-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.notify-action-btn {
+    text-decoration: none;
+}
+
+.notify-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: rgba(var(--mdui-color-on-surface-variant));
+    font-size: var(--mdui-typescale-body-small-size);
+    line-height: var(--mdui-typescale-body-small-line-height);
+    letter-spacing: var(--mdui-typescale-body-small-tracking);
+    font-weight: var(--mdui-typescale-body-small-weight);
+}
+
+.notify-meta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    color: rgba(var(--mdui-color-on-surface-variant));
+}
+
+.notify-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: rgba(var(--mdui-color-on-surface-variant));
+    font-size: var(--mdui-typescale-body-small-size);
+    line-height: var(--mdui-typescale-body-small-line-height);
+    letter-spacing: var(--mdui-typescale-body-small-tracking);
+    font-weight: var(--mdui-typescale-body-small-weight);
+    margin-top: 1rem;
+}
+
+
 </style>
-<mdui-card variant="elevated" class="notify-card notify-${cls} w-full p-3">
-    <div class="d-flex items-center flex-wrap gap-2 mb-3"><span class="badge badge-sm rounded-full bg-${cls} text-on-${cls} d-inline-flex items-center font-medium"><mdui-icon name="${meta.icon}" class="notify-icon-sm mr-1"></mdui-icon>${meta.label}</span><div class="flex-1"></div>${channelLine}</div>
-    <h1 class="headline-medium text-${cls} font-bold mb-3 break-words">${this.heading || '（无标题）'}</h1>
-    <div class="notify-body body-large text-on-surface">${bodyHtml}</div>${actionsHtml}${footerHtml}
+<mdui-card variant="elevated" class="notify-card notify-card--${cls}">
+    <div class="notify-header">
+        <span class="notify-status-badge notify-status-badge--${cls}"><mdui-icon name="${meta.icon}" class="notify-icon-sm"></mdui-icon>${meta.label}</span><div class="notify-header-spacer"></div>${channelLine}
+    </div>
+    <h1 class="notify-title notify-title--${cls}">${this.heading || '（无标题）'}</h1>
+    <div class="notify-body">${bodyHtml}</div>
+${actionsHtml}${footerHtml}
 </mdui-card>`;
     }
 }
