@@ -1,3 +1,7 @@
 /vendor
 composer.lock
 /src/runtime
+/src/config.php
+/dist
+.php-cs-fixer.dist.php
+.php-cs-fixer.cache
