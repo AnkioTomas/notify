@@ -26,9 +26,11 @@ class Main extends Controller
      */
     public function publish(string $channel): Response
     {
+        $type = $this->request->get("type", 'ntfy');
+
         $app = AppDao::getInstance()->shortName($channel);
         if (empty($app)) {
-            return Response::asJson(["msg" => "Unknow channel", "code" => 404,], 404);
+            return $this->publishErrorResponse($type, 404, 'Unknow channel', 404);
         }
 
         $headers = $this->request->getHeaders();
@@ -36,11 +38,9 @@ class Main extends Controller
         $authorization = $headers['Authorization'] ?? $this->request->arg('authorization') ?? null;
 
         if (strlen($authorization) <= 6 || config('authorization') !== $authorization) {
-            return Response::asJson(["msg" => "Unauthorized", "code" => 403,], 403);
+            return $this->publishErrorResponse($type, 403, 'Unauthorized', 403);
         }
         // 校验授权
-
-        $type = $this->request->get("type", 'ntfy');
 
         // Title	通知标题	X-Title: 警报
         //Priority	优先级 (1-5 或 min, low, default, high, urgent)	X-Priority: 5
@@ -60,7 +60,7 @@ class Main extends Controller
         };
 
         if ($model === null) {
-            return Response::asJson(["msg" => "Unknow model", "code" => 400,], 400);
+            return $this->publishErrorResponse($type, 400, 'Unknow model', 400);
         }
 
         $model = NotificationDao::getInstance()->post($model);
@@ -72,12 +72,55 @@ class Main extends Controller
             try {
                 WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
             } catch (WechatException $e) {
-                return Response::asJson(["msg" => $e->getMessage(), "code" => 500], 200);
+                // 企微上游 API 常为 HTTP 200 + errcode≠0；这里对各 type 继续用语义化 body（见 publishErrorResponse）
+                return $this->publishErrorResponse($type, 200, $e->getMessage(), $e->getCode() ?: 500);
             }
         }
 
-        return Response::asJson(["msg" => "Success", "code" => 200, "data" => $model], 200);
+        return $this->publishSuccessResponse($type, $model);
+    }
 
+    /**
+     * 按 type 输出各 webhook 方言，避免钉钉/飞书等只认 errcode、code 的客户端误判。
+     *
+     * - dingding/wechat：对齐企微/钉钉机器人的 errcode/errmsg（业务失败时 HTTP 仍可为 200）
+     * - feishu：常见 code/msg/data
+     * - ntfy：简化版消息事件字段
+     * - form：保持原统一 JSON（通用 HTTP API）
+     */
+    private function publishSuccessResponse(string $type, NotificationModel $model): Response
+    {
+        return match ($type) {
+            'dingding', 'wechat' => Response::asJson(['errcode' => 0, 'errmsg' => 'ok'], 200),
+            'feishu'             => Response::asJson(['code' => 0, 'msg' => 'success', 'data' => new \stdClass()], 200),
+            default               => Response::asJson(['msg' => 'Success', 'code' => 200, 'data' => $model], 200),
+        };
+    }
+
+    /**
+     * @param int $httpCode        HTTP 层状态（鉴权失败等仍可 403/400）
+     * @param int $bizOrVendorCode 映射到方言里的业务码（如 errcode）；为 0 时按 HTTP 推导
+     */
+    private function publishErrorResponse(
+        string $type,
+        int $httpCode,
+        string $message,
+        int $bizOrVendorCode = 0
+    ): Response {
+        $code = $bizOrVendorCode > 0 ? $bizOrVendorCode : ($httpCode > 0 ? $httpCode : 400);
+
+        return match ($type) {
+            'dingding', 'wechat' => Response::asJson([
+                'errcode' => $code,
+                'errmsg'  => $message,
+            ], $httpCode),
+            'feishu' => Response::asJson([
+                'code' => $code,
+                'msg'  => $message,
+                'data' => new \stdClass(),
+            ], $httpCode),
+            default => Response::asJson(['msg' => $message, 'code' => $code], $httpCode),
+        };
     }
 
     private function saveAndPush(NotificationModel $model, AppModel $app)
@@ -108,6 +151,8 @@ class Main extends Controller
 
     public function getFromNtfy(int $app): ?NotificationModel
     {
+        $headers = $this->request->getHeaders();
+
         $title = rawurldecode($headers['X-Title'] ?? '');
 
         $priority = $headers['X-Priority'] ?? 'info';
