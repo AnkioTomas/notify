@@ -30,8 +30,11 @@ class Short extends Controller
 
         $app = AppDao::getInstance()->id($model->app);
 
+        $parsedown = new Parsedown();
+        $parsedown->setBreaksEnabled(true);
+
         $bodyHtml = $model->message !== ''
-            ? (new Parsedown())->setBreaksEnabled(true)->text($model->message)
+            ? $parsedown->text($model->message)
             : '';
 
         $actions = $model->actions ?? [];
@@ -46,7 +49,7 @@ class Short extends Controller
 
         $payload = [
             'title'           => $pageTitle,
-            'heading'         => $model->title !== '' ? $model->title : '（无标题）',
+            'heading'         => $model->title !== '' ? $parsedown->text($model->title) : '（无标题）',
             'channel'         => $app?->name ?? '未知频道',
             'priority'        => $model->priority,
             'time'            => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',

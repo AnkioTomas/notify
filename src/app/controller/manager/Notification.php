@@ -31,7 +31,8 @@ class Notification extends BaseController
             $priority !== '' ? $priority : null
         );
         $appDao = AppDao::getInstance();
-        $parsedown = (new Parsedown())->setSafeMode(false);
+        $parsedown = new Parsedown();
+        $parsedown->setBreaksEnabled(true);
 
         $data = [];
         foreach ($result['data'] as $model) {
@@ -56,7 +57,7 @@ class Notification extends BaseController
             $data[] = [
                 'id'              => $model->id,
                 'short_url'       => $model->short_url,
-                'title'           => $model->title,
+                'title'           => $parsedown->text($model->title),
                 'message'         => $model->message,
                 'messageHtml'     => $messageHtml,
                 'priority'        => $model->priority,
