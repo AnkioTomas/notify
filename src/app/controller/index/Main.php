@@ -6,7 +6,6 @@ namespace app\controller\index;
 
 use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
-use app\database\model\AppModel;
 use app\database\model\NotificationModel;
 use app\utils\WechatException;
 use app\utils\WorkWechatApp;
@@ -121,16 +120,6 @@ class Main extends Controller
             ], $httpCode),
             default => Response::asJson(['msg' => $message, 'code' => $code], $httpCode),
         };
-    }
-
-    private function saveAndPush(NotificationModel $model, AppModel $app)
-    {
-        $model = NotificationDao::getInstance()->post($model);
-        // 发布到微信
-        $toUser = config('work_wechat.to_user');
-        if (!empty($toUser) && $app->secret !== '' && $app->agent_id !== '') {
-            WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
-        }
     }
 
     private function splitActions(string $actions): array
@@ -365,11 +354,18 @@ class Main extends Controller
             }
         }
 
+        $actions = $this->request->get('actions');
+        if ($actions != null) {
+            $actions  = $this->splitActions($actions);
+        } else {
+            $actions = $links;
+        }
+
         // 3. 返回数组，第三个参数是链接对象（关联数组）
         return [
             $title,
             $body,
-            $links // 强制转换为对象，确保输出 JSON 时是 {} 而不是 []
+            $actions // 强制转换为对象，确保输出 JSON 时是 {} 而不是 []
         ];
     }
 
