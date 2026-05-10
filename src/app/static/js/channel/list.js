@@ -43,6 +43,7 @@ window.pageOnLoad = function (loading) {
 <mdui-menu-item value="feishu">飞书 webhook</mdui-menu-item>
 <mdui-menu-item value="wechat">企业微信 webhook</mdui-menu-item>
 <mdui-menu-item value="form">通用 Form 请求</mdui-menu-item>
+<mdui-menu-item value="json">JSON 模式</mdui-menu-item>
 </mdui-menu>
 </mdui-dropdown>
 <mdui-button-icon data-index="${index}" icon="edit" class="action-editor" title="编辑"></mdui-button-icon>
@@ -74,7 +75,7 @@ window.pageOnLoad = function (loading) {
 
     /**
      * POST 发布地址，查询串含 type、authorization（与 {@see Main::publish} 一致）。
-     * @param {"dingding"|"feishu"|"wechat"|"form"} webhookType
+     * @param {"dingding"|"feishu"|"wechat"|"form"|"json"} webhookType
      * @param {string} shortName
      * @param {string} authorization
      */
