@@ -52,6 +52,7 @@ class Main extends Controller
         $model = match ($type) {
             'ntfy' => $this->getFromNtfy($app->id),
             'form' => $this->getFromForm($app->id),
+            'json' => $this->getFromForm($app->id, true),
             'dingding' => $this->getFromDingding($app->id),
             'feishu' => $this->getFromFeishu($app->id),
             'wechat' => $this->getFromWechat($app->id),
@@ -166,12 +167,45 @@ class Main extends Controller
 
     }
 
-    public function getFromForm(int $app): ?NotificationModel
+    private function getFromMutiKey($data, $keys): ?string
     {
-        $title = rawurldecode($this->request->post('title') ?? '');
-        $message = $this->request->post('message') ?? $this->request->post('content') ?? '';
-        $priority = $this->request->post('priority') ?? $this->selectPriority($title . $message);
-        $actionsStr = rawurldecode($this->request->post('actions') ?? '');
+        if (!is_array($data)) {
+            return null;
+        }
+
+        // 将原数组的键全部转为小写，避免在循环中重复处理
+        $dataLower = array_change_key_case($data, CASE_LOWER);
+
+        foreach ($keys as $key) {
+            // 将要查找的 key 也转为小写
+            $target = strtolower($key);
+            if (isset($dataLower[$target])) {
+                // 确保返回的是字符串，符合你的返回类型声明
+                return (string) $dataLower[$target];
+            }
+        }
+
+        return null;
+    }
+
+    public function getFromForm(int $app, bool $json = false): ?NotificationModel
+    {
+        $data = [];
+        if ($json) {
+            try {
+                $data = Json::decode($this->request->raw(), true);
+            } catch (JsonDecodeException $e) {
+                return null;
+            }
+        } else {
+            $data = $this->request->post();
+        }
+
+        $title = rawurldecode($this->getFromMutiKey($data, ['title','subject'])  ?? '');
+        $message = rawurldecode($this->getFromMutiKey($data, ['message','content','message'])  ?? '');
+        $priority = rawurldecode($this->getFromMutiKey($data, ['priority','severity'])  ?? '');
+        $priority = $this->selectPriority($priority.$title . $message);
+        $actionsStr = rawurldecode($data['actions'] ?? '');
         if (!empty($actionsStr)) {
             $actions = $this->splitActions($actionsStr);
         } else {
