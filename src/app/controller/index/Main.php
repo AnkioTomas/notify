@@ -356,7 +356,7 @@ class Main extends Controller
 
         $actions = $this->request->get('actions');
         if ($actions != null) {
-            $actions  = $this->splitActions($actions);
+            $actions  = $this->splitActions(rawurldecode($actions));
         } else {
             $actions = $links;
         }
