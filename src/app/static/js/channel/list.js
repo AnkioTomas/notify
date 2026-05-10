@@ -31,13 +31,22 @@ window.pageOnLoad = function (loading) {
                     field: "id",
                     name: "操作",
                     align: "center",
-                    width: 200,
+                    width: 280,
                     fixed: "right",
                     formatter: function (value, row, index) {
                         return `
 <mdui-button-icon data-index="${index}" icon="science" class="action-test" title="测试发布"></mdui-button-icon>
+<mdui-dropdown class="action-copy-dd" data-index="${index}" placement="bottom-end">
+<mdui-button-icon slot="trigger" icon="content_copy" title="复制 Webhook URL"></mdui-button-icon>
+<mdui-menu>
+<mdui-menu-item value="dingding">钉钉 webhook</mdui-menu-item>
+<mdui-menu-item value="feishu">飞书 webhook</mdui-menu-item>
+<mdui-menu-item value="wechat">企业微信 webhook</mdui-menu-item>
+<mdui-menu-item value="form">通用 Form 请求</mdui-menu-item>
+</mdui-menu>
+</mdui-dropdown>
 <mdui-button-icon data-index="${index}" icon="edit" class="action-editor" title="编辑"></mdui-button-icon>
-<mdui-button-icon  data-index="${index}" icon="delete" class="action-delete" title="删除"></mdui-button-icon>`;
+<mdui-button-icon data-index="${index}" icon="delete" class="action-delete" title="删除"></mdui-button-icon>`;
                     },
                 },
             ],
@@ -63,10 +72,45 @@ window.pageOnLoad = function (loading) {
 
     let database = initDataBase();
 
+    /**
+     * POST 发布地址，查询串含 type、authorization（与 {@see Main::publish} 一致）。
+     * @param {"dingding"|"feishu"|"wechat"|"form"} webhookType
+     * @param {string} shortName
+     * @param {string} authorization
+     */
+    function buildPublishWebhookUrl(webhookType, shortName, authorization) {
+        const base = `${location.origin}/${encodeURIComponent(shortName)}`;
+        const q = new URLSearchParams();
+        q.set("type", webhookType);
+        q.set("authorization", authorization);
+        return `${base}?${q.toString()}`;
+    }
+
 
     let dialog = document.querySelector("#channelDialog");
     let testDialog = document.querySelector("#testDialog");
     $("#dataTable")
+        .on("click", ".action-copy-dd mdui-menu-item", function () {
+            const value = this.getAttribute("value");
+            if (!value) {
+                return;
+            }
+            const index = $(this).closest(".action-copy-dd").data("index");
+            const row = database.getRow(index);
+            if (!row || !row.short_name) {
+                $.toaster.error("无法获取频道信息");
+                return;
+            }
+            $.request.get("/token/get", {}, (authResp) => {
+                const auth = authResp.data;
+                if (!auth) {
+                    $.toaster.error("无法获取授权 Token");
+                    return;
+                }
+                $.copy(buildPublishWebhookUrl(value, row.short_name, auth));
+                $.toaster.success("已复制URL");
+            });
+        })
         .on('click', '.action-delete', function () {
             let row = database.getRow($(this).data("index"));
             $.request.postForm("/channel/del", {
