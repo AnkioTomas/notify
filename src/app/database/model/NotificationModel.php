@@ -27,6 +27,14 @@ class NotificationModel extends Model
     /** 企业文本里同一行两个 action 之间的分隔（emoji） */
     private const string WECHAT_ACTION_SEPARATOR = ' 🔹 ';
 
+    /**
+     * 仅限制正文字段 `message` 的 UTF-8 字节长度。
+     * 企微整条 text.content 上限 2048 字节；标题/链接/按钮等另占额度，正文单独封顶避免超长正文。
+     */
+    private const int WECHAT_MESSAGE_FIELD_MAX_BYTES = 1536;
+
+    private const string WECHAT_MESSAGE_TRUNCATE_SUFFIX = "\n…(已截断)";
+
     public function getUnique(): array
     {
         return ['short_url'];
@@ -39,6 +47,8 @@ class NotificationModel extends Model
 
     public function toWechat(): string
     {
+        $messageBody = $this->truncateMessageBodyForWechat($this->message);
+
         $emoji = $this->priorityEmoji();
         $links = [];
         foreach ($this->actions as $key => $value) {
@@ -60,7 +70,7 @@ class NotificationModel extends Model
             $markdown = <<<EOF
 # $emoji $this->title
 ---
-$this->message
+$messageBody
 ---
 $actionsText
 ---
@@ -70,12 +80,28 @@ EOF;
             $markdown = <<<EOF
 # $emoji $this->title
 ---
-$this->message
+$messageBody
  <a href='$url'>查看原文</a>
 EOF;
         }
 
         return $this->emojiMarkdownToText($markdown);
+    }
+
+    /** 仅截断 message 字段，按字节且不切裂 UTF-8 字符 */
+    private function truncateMessageBodyForWechat(string $message): string
+    {
+        if (strlen($message) <= self::WECHAT_MESSAGE_FIELD_MAX_BYTES) {
+            return $message;
+        }
+        $suffix    = self::WECHAT_MESSAGE_TRUNCATE_SUFFIX;
+        $suffixLen = strlen($suffix);
+        $budget    = self::WECHAT_MESSAGE_FIELD_MAX_BYTES - $suffixLen;
+        if ($budget < 1) {
+            return mb_strcut($message, 0, self::WECHAT_MESSAGE_FIELD_MAX_BYTES, 'UTF-8');
+        }
+
+        return mb_strcut($message, 0, $budget, 'UTF-8') . $suffix;
     }
 
     private function priorityEmoji(): string
