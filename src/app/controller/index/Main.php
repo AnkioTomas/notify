@@ -202,7 +202,7 @@ class Main extends Controller
         }
 
         $title = rawurldecode($this->getFromMutiKey($data, ['title','subject'])  ?? '');
-        $message = rawurldecode($this->getFromMutiKey($data, ['message','content','message'])  ?? '');
+        $message = rawurldecode($this->getFromMutiKey($data, ['message','content','description'])  ?? '');
         $priority = rawurldecode($this->getFromMutiKey($data, ['priority','severity'])  ?? '');
         $priority = $this->selectPriority($priority.$title . $message);
         $actionsStr = rawurldecode($data['actions'] ?? '');

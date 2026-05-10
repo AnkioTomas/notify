@@ -123,9 +123,7 @@
 
             <section class="token-demo-block">
                 <div class="title-medium mb-2">发布接口与示例</div>
-                <p class="body-small text-on-surface-variant mb-2">
-                    <code>POST /{渠道短标识}</code>，正文为 <strong>纯文本</strong>；
-                </p>
+                <p id="pubModeDesc" class="body-small text-on-surface-variant mb-2"></p>
 
 
                 <div class="mb-2 row col-space16">
@@ -136,7 +134,17 @@
                         <mdui-select id="pubChannelSelect" label="渠道"  ></mdui-select>
                     </div>
                     <div class="col-sm12 col-xs6 col-md4 ">
-                        <mdui-select id="pubPriority" label="X-Priority"  value="info">
+                        <mdui-select id="pubModeSelect" label="发布模式 / type" value="ntfy">
+                            <mdui-menu-item value="ntfy">ntfy（X-Title + 纯文本正文）</mdui-menu-item>
+                            <mdui-menu-item value="dingding">钉钉 webhook</mdui-menu-item>
+                            <mdui-menu-item value="feishu">飞书 webhook</mdui-menu-item>
+                            <mdui-menu-item value="wechat">企业微信 webhook</mdui-menu-item>
+                            <mdui-menu-item value="form">通用 Form（multipart）</mdui-menu-item>
+                            <mdui-menu-item value="json">JSON 模式（application/json）</mdui-menu-item>
+                        </mdui-select>
+                    </div>
+                    <div id="pubPriorityWrap" class="col-sm12 col-xs6 col-md4 ">
+                        <mdui-select id="pubPriority" label="X-Priority / priority"  value="info">
                             <mdui-menu-item value="info">info（信息）</mdui-menu-item>
                             <mdui-menu-item value="warning">warning（警告）</mdui-menu-item>
                             <mdui-menu-item value="error">error（错误）</mdui-menu-item>
@@ -144,10 +152,10 @@
                         </mdui-select>
                     </div>
                     <div class="col-sm12 col-xs6 col-md4 ">
-                        <mdui-text-field id="pubTitle" label="X-Title" value="通知标题"></mdui-text-field>
+                        <mdui-text-field id="pubTitle" label="标题 / X-Title" value="通知标题"></mdui-text-field>
                     </div>
-                    <div class="col-sm12 col-xs6 col-md4 ">
-                        <mdui-text-field id="pubActions" label="X-Actions" rows="2"  value="文档,https://example.com;工单,https://example.com""></mdui-text-field>
+                    <div id="pubActionsWrap" class="col-sm12 col-xs6 col-md4 ">
+                        <mdui-text-field id="pubActions" label="X-Actions" rows="2"  value="文档,https://example.com;工单,https://example.com"></mdui-text-field>
                     </div>
                     <div class="col-sm12 col-xs6 col-md4 ">
                         <mdui-text-field id="pubMessage" label="正文（body）" rows="2" value="Backup successful 😀"></mdui-text-field>
@@ -171,7 +179,7 @@
 
                     <mdui-tab-panel slot="panel" value="curl">
                         <div class="token-panel-head">
-                            <span class="body-small text-on-surface-variant">含全部请求头；正文 heredoc</span>
+                            <span class="body-small text-on-surface-variant">随「发布模式」切换：ntfy 用请求头；其它模式 URL 带 type 与 authorization</span>
                             <mdui-button-icon icon="content_copy" data-copy-for="curl" class="token-copy-snippet" title="复制"></mdui-button-icon>
                         </div>
                         <pre class="token-pre"><code id="code-curl" class="language-bash"></code></pre>
