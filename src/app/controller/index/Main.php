@@ -204,7 +204,7 @@ class Main extends Controller
         $title = rawurldecode($this->getFromMutiKey($data, ['title','subject'])  ?? '');
         $message = rawurldecode($this->getFromMutiKey($data, ['message','content','description'])  ?? '');
         $priority = rawurldecode($this->getFromMutiKey($data, ['priority','severity'])  ?? '');
-        $priority = $this->selectPriority($priority.$title . $message);
+        $priority = $this->selectPriority($priority, $title, $message);
         $actionsStr = rawurldecode($data['actions'] ?? '');
         if (!empty($actionsStr)) {
             $actions = $this->splitActions($actionsStr);
@@ -257,7 +257,7 @@ class Main extends Controller
             'app' => $app,
             'title' => $title,
             'message' => $message,
-            'priority' => $this->selectPriority($title . $message),
+            'priority' => $this->selectPriority($title, $message),
             'actions' => $actions,
             't' => time(),
         ]);
@@ -351,7 +351,7 @@ class Main extends Controller
             'app' => $app,
             'title' => $title,
             'message' => $message,
-            'priority' => $this->selectPriority($title . $message),
+            'priority' => $this->selectPriority($title, $message),
             'actions' => $actions,
             't' => time(),
         ]);
@@ -403,7 +403,7 @@ class Main extends Controller
         ];
     }
 
-    private function selectPriority($raw): string
+    private function selectPriority(...$raw): string
     {
         if (empty($raw)) {
             return 'info';
@@ -418,17 +418,14 @@ class Main extends Controller
             'info' => '/(info|notice|debug|msg|log|信息|通知|日志)/i',
         ];
 
-        // 按顺序进行正则扫描，一旦命中立即返回
-        foreach ($map as $priority => $pattern) {
-            if (preg_match($pattern, $raw)) {
-                return $priority;
+        foreach ($raw as $k => $v) {
+            // 按顺序进行正则扫描，一旦命中立即返回
+            foreach ($map as $priority => $pattern) {
+                if (preg_match($pattern, $v)) {
+                    return $priority;
+                }
             }
-        }
 
-        // 如果包含特定的状态码逻辑（可选）
-        // 例如：HTTP 状态码或业务错误码
-        if (preg_match('/\b(4\d{2}|5\d{2})\b/', $raw)) {
-            return 'error';
         }
 
         return 'info'; // 兜底类型
