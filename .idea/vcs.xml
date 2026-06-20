@@ -5,9 +5,6 @@
     <mapping directory="$PROJECT_DIR$/src/app/static/components/captcha" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/app/static/components/dataTable" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/app/static/components/formDialog" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/src/app/static/components/language" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/src/app/static/components/pjax" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/src/app/static/components/theme" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/app/static/framework" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/framework" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/avatar" vcs="Git" />
@@ -17,7 +14,6 @@
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/http" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/ip" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/login" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/src/nova/plugin/minify" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/orm" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/tpl" vcs="Git" />
   </component>

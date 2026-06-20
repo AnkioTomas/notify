@@ -19,21 +19,22 @@ use function nova\framework\route;
 
 use nova\framework\route\Route;
 
+use nova\plugin\login\LoginTpl;
+
+use nova\plugin\login\route\PermissionRouter;
+
 class Application extends App
 {
     public function onFrameworkStart(): void
     {
         Installer::register();
+        LoginTpl::getInstance()->registerRouter('manager', 'main');
         Route::getInstance()
             // API 路由
 
             // UI 路由
             ->get("/", route("manager", "main", "index"))
             ->get("/notify/{channel}", route("notify", "main", "channel"))
-
-            ->get("/account", route("manager", "main", "account"))
-            ->get("/sso", route("manager", "main", "sso"))
-            ->get("/channel", route("manager", "main", "channel"))
 
             ->get("/token", route("manager", "main", "token"))
             ->get("/token/get", route("manager", "token", "get"))
@@ -54,6 +55,18 @@ class Application extends App
             ->post("/{channel}", route("index", "main", "publish"))
             ->get("/{short}", route("index", "short", "detail"))
         ;
+
+        PermissionRouter::getInstance()->registerPermissions('通知配置', "notify_manage", [
+            'ANY /token*',
+            'ANY /wechat*'
+        ]);
+
+        PermissionRouter::getInstance()->registerPermissions('只读通知', "notify_read", [
+            'ANY /notify*',
+            'ANY /notifications*',
+            'ANY /login/pwd'
+        ]);
+
     }
 
     public const string SYSTEM_NAME =  "AnkioのNotify";

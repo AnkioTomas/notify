@@ -9,8 +9,10 @@ use app\database\dao\AppDao;
 use app\database\model\AppModel;
 
 use nova\framework\http\Response;
+use nova\plugin\login\LoginTpl;
 use nova\plugin\login\manager\PwdLoginManager;
 use nova\plugin\login\manager\SSOLoginManager;
+use nova\plugin\login\route\PermissionRouter;
 use nova\plugin\tpl\ViewResponse;
 
 class Main extends BaseController
@@ -60,26 +62,16 @@ class Main extends BaseController
                     "url" => "/wechat",
                     "pjax" => true
                 ],
-                [
-                    "title" => "账户安全",
-                    "url" => "/account",
-                    "icon" => "security",
-                    "pjax" => true
-                ],
-                [
-                    "title" => "统一认证登录",
-                    "url" => "/sso",
-                    "icon" => "vpn_key",
-                    "pjax" => true
-                ],
+
+                LoginTpl::getInstance()->menu()
             ];
 
             return $this->viewResponse->asTpl("layout", [
-                'menuConfig' => $menu
+                'menuConfig' => PermissionRouter::getInstance()->filterMenu($menu, $this->userModel->role()->permissions)
             ]);
         }
 
-        return null;
+        return LoginTpl::getInstance()->route($this->viewResponse, $this->request);
     }
 
     public function index(): Response
