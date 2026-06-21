@@ -56,18 +56,15 @@ class NotifyCard extends HTMLElement {
         const meta = NotifyCard.#priorityMeta[this.priority] || NotifyCard.#priorityMeta.info;
         const cls = meta.cls;
 
-        const tones = new Set(['primary', 'secondary', 'tertiary', 'error']);
-
         const act = this.actions;
         const rows = act && typeof act === 'object' ? Object.entries(act) : [];
-        const tone = tones.has(cls) ? cls : 'primary';
         const actionsHtml =
             rows.length === 0
                 ? ''
-                : `<div class="notify-actions notify-actions--${tone}">${rows
+                : `<div class="notify-actions">${rows
                       .map(
                           ([label, href]) =>
-                              `<mdui-button class="notify-action-btn" variant="filled" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
+                              `<mdui-button class="notify-action-btn" variant="outlined" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
                       )
                       .join('')}</div>`;
 
@@ -96,115 +93,88 @@ class NotifyCard extends HTMLElement {
     box-sizing: border-box;
 }
 
-.notify-title {
-    margin-top: 0;
-    font-size: var(--mdui-typescale-headline-medium-size);
-    line-height: var(--mdui-typescale-headline-medium-line-height);
-    letter-spacing: var(--mdui-typescale-headline-medium-tracking);
-    font-weight: 700;
-    overflow-wrap: break-word;
-    margin-bottom: 1rem;
+.notify-card {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    padding: 1rem 1rem 1rem 0.875rem;
+    border-left: 3px solid rgba(var(--mdui-color-outline-variant));
+    background: rgba(var(--mdui-color-surface-container-low));
 }
 
-.notify-body {
-    font-size: var(--mdui-typescale-body-large-size);
-    line-height: var(--mdui-typescale-body-large-line-height);
-    letter-spacing: var(--mdui-typescale-body-large-tracking);
-    font-weight: var(--mdui-typescale-body-large-weight);
-    color: rgba(var(--mdui-color-on-surface)) !important;
+.notify-card--primary {
+    border-left-color: rgba(var(--mdui-color-primary), 0.45);
+}
+.notify-card--secondary {
+    border-left-color: rgba(var(--mdui-color-secondary), 0.45);
+}
+.notify-card--tertiary {
+    border-left-color: rgba(var(--mdui-color-tertiary), 0.45);
+}
+.notify-card--error {
+    border-left-color: rgba(var(--mdui-color-error), 0.55);
+}
+
+.notify-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.notify-header-spacer {
+    flex: 1 1 0%;
 }
 
 .notify-status-badge {
     display: inline-flex;
     align-items: center;
+    gap: 0.2rem;
     white-space: nowrap;
     font-weight: 500;
-    text-decoration: none;
     border-radius: 9999px;
-    padding: 0.37rem 0.55rem;
+    padding: 0.15rem 0.5rem;
     font-size: var(--mdui-typescale-label-small-size);
     line-height: var(--mdui-typescale-label-small-line-height);
+    background: rgba(var(--mdui-color-surface-container));
+    color: rgba(var(--mdui-color-on-surface-variant));
+    border: 1px solid rgba(var(--mdui-color-outline-variant), 0.65);
 }
 
-.notify-card {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: none;
-    border-left: 6px solid rgba(var(--mdui-color-primary));
-    transition: background-color 0.2s ease;
-    padding: 1rem;
+.notify-status-badge--primary {
+    color: rgba(var(--mdui-color-primary));
+    border-color: rgba(var(--mdui-color-primary), 0.28);
+}
+.notify-status-badge--secondary {
+    color: rgba(var(--mdui-color-secondary));
+    border-color: rgba(var(--mdui-color-secondary), 0.28);
+}
+.notify-status-badge--tertiary {
+    color: rgba(var(--mdui-color-tertiary));
+    border-color: rgba(var(--mdui-color-tertiary), 0.28);
+}
+.notify-status-badge--error {
+    color: rgba(var(--mdui-color-error));
+    border-color: rgba(var(--mdui-color-error), 0.32);
 }
 
-.notify-tertiary {
-    border-left-color: rgba(var(--mdui-color-tertiary));
-}
-
-.notify-error {
-    border-left-color: rgba(var(--mdui-color-error));
-}
-
-.notify-secondary {
-    border-left-color: rgba(var(--mdui-color-secondary));
-}
-
-.notify-primary {
-    background-color: rgba(var(--mdui-color-primary-container));
-}
-
-.notify-secondary {
-    background-color: rgba(var(--mdui-color-secondary-container));
-}
-
-.notify-tertiary {
-    background-color: rgba(var(--mdui-color-tertiary-container));
-}
-
-.notify-error {
-    background-color: rgba(var(--mdui-color-error-container));
-}
-
-.notify-actions--primary mdui-button::part(button) {
-    background-color: rgba(var(--mdui-color-primary)) !important;
-    color: rgba(var(--mdui-color-on-primary)) !important;
-}
-.notify-actions--primary mdui-button:focus-visible::part(button) {
-    outline: 2px solid rgba(var(--mdui-color-primary));
-    outline-offset: 2px;
-}
-
-.notify-actions--secondary mdui-button::part(button) {
-    background-color: rgba(var(--mdui-color-secondary)) !important;
-    color: rgba(var(--mdui-color-on-secondary)) !important;
-}
-.notify-actions--secondary mdui-button:focus-visible::part(button) {
-    outline: 2px solid rgba(var(--mdui-color-secondary));
-    outline-offset: 2px;
-}
-
-.notify-actions--tertiary mdui-button::part(button) {
-    background-color: rgba(var(--mdui-color-tertiary)) !important;
-    color: rgba(var(--mdui-color-on-tertiary)) !important;
-}
-.notify-actions--tertiary mdui-button:focus-visible::part(button) {
-    outline: 2px solid rgba(var(--mdui-color-tertiary));
-    outline-offset: 2px;
-}
-
-.notify-actions--error mdui-button::part(button) {
-    background-color: rgba(var(--mdui-color-error)) !important;
-    color: rgba(var(--mdui-color-on-error)) !important;
-}
-.notify-actions--error mdui-button:focus-visible::part(button) {
-    outline: 2px solid rgba(var(--mdui-color-error));
-    outline-offset: 2px;
-}
-
-.notify-icon-sm {
-    font-size: 1rem;
+.notify-title {
+    margin: 0 0 0.75rem;
+    font-size: var(--mdui-typescale-title-large-size);
+    line-height: var(--mdui-typescale-title-large-line-height);
+    letter-spacing: var(--mdui-typescale-title-large-tracking);
+    font-weight: 600;
+    color: rgba(var(--mdui-color-on-surface));
+    overflow-wrap: break-word;
 }
 
 .notify-body {
-    line-height: 1.7;
+    font-size: var(--mdui-typescale-body-medium-size);
+    line-height: 1.65;
+    letter-spacing: var(--mdui-typescale-body-medium-tracking);
+    font-weight: var(--mdui-typescale-body-medium-weight);
+    color: rgba(var(--mdui-color-on-surface));
 }
 
 .notify-body > *:first-child {
@@ -240,7 +210,7 @@ class NotifyCard extends HTMLElement {
 }
 
 .notify-body blockquote {
-    border-left: 4px solid rgba(var(--mdui-color-outline-variant));
+    border-left: 3px solid rgba(var(--mdui-color-outline-variant));
     padding: 0.25rem 0.85rem;
     margin: 0.75rem 0;
     color: rgba(var(--mdui-color-on-surface-variant));
@@ -275,70 +245,18 @@ class NotifyCard extends HTMLElement {
     margin: 0.15rem 0;
 }
 
-.notify-card--primary {
-    background-color: rgba(var(--mdui-color-primary-container),0.5);
-    border-left-color: rgba(var(--mdui-color-primary));
-}
-.notify-card--secondary {
-    background-color: rgba(var(--mdui-color-secondary-container));
-    border-left-color: rgba(var(--mdui-color-secondary));
-}
-.notify-card--tertiary {
-    background-color: rgba(var(--mdui-color-tertiary-container));
-    border-left-color: rgba(var(--mdui-color-tertiary));
-}
-.notify-card--error {
-    background-color: rgba(var(--mdui-color-error-container));
-    border-left-color: rgba(var(--mdui-color-error));
-}
-
-.notify-status-badge--primary {
-    background-color: rgba(var(--mdui-color-primary));
-    color: rgba(var(--mdui-color-on-primary));
-}
-.notify-status-badge--secondary {
-    background-color: rgba(var(--mdui-color-secondary));
-    color: rgba(var(--mdui-color-on-secondary));
-}
-.notify-status-badge--tertiary {
-    background-color: rgba(var(--mdui-color-tertiary));
-    color: rgba(var(--mdui-color-on-tertiary));
-}
-.notify-status-badge--error {
-    background-color: rgba(var(--mdui-color-error));
-    color: rgba(var(--mdui-color-on-error));
-}
-
-.notify-title--primary {
-    color: rgba(var(--mdui-color-primary));
-}
-.notify-title--secondary {
-    color: rgba(var(--mdui-color-secondary));
-}
-.notify-title--tertiary {
-    color: rgba(var(--mdui-color-tertiary));
-}
-.notify-title--error {
-    color: rgba(var(--mdui-color-error));
-}
-
-.notify-header {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.notify-header-spacer {
-    flex: 1 1 0%;
+.notify-icon-sm {
+    font-size: 0.95rem;
+    opacity: 0.85;
 }
 
 .notify-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1rem;
+    margin-top: 0.875rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid rgba(var(--mdui-color-outline-variant), 0.55);
 }
 
 .notify-action-btn {
@@ -356,14 +274,6 @@ class NotifyCard extends HTMLElement {
     font-weight: var(--mdui-typescale-body-small-weight);
 }
 
-.notify-meta-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    text-decoration: none;
-    color: rgba(var(--mdui-color-on-surface-variant));
-}
-
 .notify-footer {
     display: flex;
     align-items: center;
@@ -374,16 +284,15 @@ class NotifyCard extends HTMLElement {
     line-height: var(--mdui-typescale-body-small-line-height);
     letter-spacing: var(--mdui-typescale-body-small-tracking);
     font-weight: var(--mdui-typescale-body-small-weight);
-    margin-top: 1rem;
+    margin-top: 0.75rem;
 }
 
-
 </style>
-<mdui-card variant="elevated" class="notify-card notify-card--${cls}">
+<mdui-card variant="outlined" class="notify-card notify-card--${cls}">
     <div class="notify-header">
         <span class="notify-status-badge notify-status-badge--${cls}"><mdui-icon name="${meta.icon}" class="notify-icon-sm"></mdui-icon>${meta.label}</span><div class="notify-header-spacer"></div>${channelLine}
     </div>
-    <h1 class="notify-title notify-title--${cls}">${this.heading || '（无标题）'}</h1>
+    <h1 class="notify-title">${this.heading || '（无标题）'}</h1>
     <div class="notify-body">${bodyHtml}</div>
 ${actionsHtml}${footerHtml}
 </mdui-card>`;
