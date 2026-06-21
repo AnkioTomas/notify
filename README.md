@@ -1,102 +1,251 @@
-# Ankio Notify
+<p align="center">
+  <img src="src/app/static/icons/android-chrome-512x512.png" alt="Ankio Notify" width="96" height="96">
+</p>
 
-轻量通知中心：HTTP 发布、短链详情、后台管理；可选推到企业微信应用。
+<h1 align="center">Ankio Notify</h1>
 
----
-
-## 特性：多格式发布
-
-同一入口 **`POST /{渠道短标识}`**，用查询参数 **`type`** 选择载荷格式（省略时默认为 **`ntfy`**，与 ntfy 风格兼容）。鉴权支持 **`Authorization` 请求头**，也可与 **`type`** 一起放在查询参数 **`authorization`** 里（便于钉钉、飞书等只填 URL 的场景）。
-
-| `type` | 说明 |
-|--------|------|
-| **`ntfy`**（默认） | 请求头：`X-Title`、`X-Priority`、`X-Actions`；正文为 **纯文本**。适合自建脚本、兼容 ntfy 的客户端。 |
-| **`dingding`** | 钉钉自定义机器人：**JSON**，`msgtype` + `text.content`（首行可作标题，与后端解析一致）。 |
-| **`feishu`** | 飞书：**JSON**，`msg_type` + `content.text`。 |
-| **`wechat`** | 企业微信机器人：**JSON**，结构与钉钉类似（`msgtype` + `text.content`）。 |
-| **`form`** | **表单**：字段 `title`、`message`、`priority` 等（`application/x-www-form-urlencoded` 或 `multipart/form-data`）。 |
-| **`json`** | **JSON 正文**：如 `title`、`message`、`priority`，由服务端解析为内部通知模型。 |
-
-**响应格式**会按 `type` 贴近各平台习惯（例如钉钉/企微返回 `errcode`/`errmsg`，飞书返回 `code`/`msg` 等），减少接入方把成功误判为失败的情况。
-
-**后台**：「发布通知」页可按模式切换 **cURL / 原始 HTTP / JavaScript / Go / Python / PHP** 示例；「渠道」列表可复制带 **`type`** 与 **`authorization`** 的完整 URL。
+<p align="center">轻量通知中心 — HTTP 发布、短链详情、后台管理；可选推送到企业微信应用。</p>
 
 ---
 
-## 1. 部署
+## 快速上手
 
-**需要：** PHP 8.0+（含 `pdo_mysql`）、MySQL 8、Nginx（或同类）+ PHP-FPM。
+```
+安装 → 创建渠道 → 复制 Authorization → POST /{渠道短标识} 发通知
+```
 
-- **网站根目录**必须是 **`src/public`**。
-- **`src/runtime`** 需可写。
-- MySQL **先建好空数据库**（向导不替你建库）。
+| 步骤 | 做什么 | 在哪 |
+|------|--------|------|
+| 1 | 部署并访问 `/install` 完成安装 | 浏览器 |
+| 2 | 新建渠道，记下**短标识**（如 `ops`） | 后台 → 通知渠道 |
+| 3 | 复制 **Authorization** 令牌 | 后台 → 发布通知 |
+| 4 | 向 `POST /{短标识}` 发请求 | cURL / 脚本 / 钉钉飞书 Webhook |
+| 5 | 查看历史、短链详情 | 后台 → 通知列表 / `GET /{short_url}` |
 
-伪静态：
+---
+
+## 部署
+
+**环境：** PHP 8.0+（含 `pdo_mysql`）、MySQL 8、Nginx（或同类）+ PHP-FPM。
+
+- 网站根目录指向 **`src/public`**
+- **`src/runtime`** 需可写
+- MySQL **先建好空数据库**（安装向导不会替你建库）
+
+Nginx 伪静态：
+
 ```nginx
 rewrite ^(.*)$ /index.php/$1 last;
 ```
 
 ---
 
-## 2. 安装
+## 安装
 
-浏览器打开 **`/install`**，填数据库和站点信息；
+浏览器打开 **`/install`**，填写数据库与站点信息。
 
-留空的 **`authorization`** 会随机生成。装完后**记下来**，发通知时要放在请求头 `Authorization` 里。
-
----
-
-## 3. 企业微信
-
-**在企业微信后台：**
-    
-- 记下 **企业 ID（corpid）**；
-- 自建应用记下 **AgentId、Secret**，成员放进应用可见范围；
-- 添加回调：**URL `https://你的域名/hook`**，Token、`EncodingAESKey` 自定，须能在公网校验。
-- 发 API 的出口 IP **加可信 IP**。
-
-**在 Notify：** 
-- 后台 **`/wechat`**（或直接 `config.php`）填：`corpid`、`to_user`（接收人 UserID，多个用 **`|`**）、`token`、`aes_key`（与上面回调一致）。
-
-**后台「渠道」：**
-- 每条渠道填 **短名**（即 URL 里的 `/{channel}`）和对应的 **`agent_id`、`secret`**。
-- 推送条件：`to_user` 非空且该渠道这两项已配置；**收件人共用全局 `to_user`**。
+- **Authorization** 留空时会随机生成 — **装完后务必保存**，发通知时要带上
+- 安装完成后登录后台（默认管理员账号在安装时设置）
 
 ---
 
-## 4. 发通知
+## 使用方法
 
-更完整的格式说明见文档开头的 **「特性：多格式发布」** 一节；以下为最常见的 **ntfy 风格**示例（`type` 省略即等同于 `ntfy`）：
+### 1. 创建通知渠道
+
+后台 **通知渠道 → 创建渠道**：
+
+| 字段 | 说明 |
+|------|------|
+| **显示名称** | 后台展示用 |
+| **短标识** | URL 路径，如 `ops` → 发布地址为 `POST /ops` |
+| **AgentId / Secret** | 可选；填写后该渠道的通知会推送到企业微信（见下文） |
+
+创建后可在列表中 **复制 Webhook URL**（已含 `type` 与 `authorization` 查询参数，适合钉钉、飞书等只填 URL 的场景）。
+
+### 2. 获取 Authorization
+
+后台 **发布通知** 页：
+
+- 查看、复制当前 **Authorization 令牌**
+- 需要时可 **重置令牌**（重置后所有旧客户端须更新）
+
+鉴权方式（二选一）：
+
+- 请求头：`Authorization: <令牌>`
+- 查询参数：`?authorization=<令牌>`（与 `type` 一起用于 Webhook URL）
+
+### 3. 发布通知
+
+**统一入口：** `POST https://你的域名/{短标识}`
+
+用查询参数 **`type`** 选择载荷格式；省略时默认为 **`ntfy`**（与 ntfy 风格兼容）。
+
+| `type` | 适用场景 | 载荷方式 |
+|--------|----------|----------|
+| **`ntfy`**（默认） | 自建脚本、ntfy 兼容客户端 | 请求头 + 纯文本正文 |
+| **`dingding`** | 钉钉自定义机器人 | JSON：`msgtype` + `text.content` |
+| **`feishu`** | 飞书机器人 | JSON：`msg_type` + `content.text` |
+| **`wechat`** | 企业微信机器人 | JSON：`msgtype` + `text.content` |
+| **`form`** | HTML 表单 / 简单 POST | 字段 `title`、`message`、`priority` |
+| **`json`** | 通用 HTTP API | JSON 正文：`title`、`message`、`priority` |
+
+**响应格式**会按 `type` 贴近各平台习惯（钉钉/企微返回 `errcode`/`errmsg`，飞书返回 `code`/`msg` 等），避免接入方把成功误判为失败。
+
+#### 3.1 ntfy 模式（默认，推荐脚本接入）
+
+`Authorization` 放请求头；`type` 可省略。
 
 ```bash
 curl -X POST "https://你的域名/ops" \
-  -H "Authorization: 安装时记的 token" \
-  -H "X-Title: 标题" \
+  -H "Authorization: 你的令牌" \
+  -H "X-Title: 备份完成" \
   -H "X-Priority: success" \
   -H "X-Actions: 面板,https://a.com;日志,https://a.com/logs;" \
-  --data-binary "正文"
+  --data-binary "数据库备份已成功，耗时 3 分钟"
 ```
 
-- **`X-Priority`：** `info` / `warning` / `error` / `success`
-- **`X-Actions`：** 多段用 **`;`**，每段 **`名称,URL`**
-- 企微推送失败时可能仍 **HTTP 200**，请看 JSON 里的 **`code` / `msg`**
+| 请求头 | 说明 |
+|--------|------|
+| `X-Title` | 通知标题 |
+| `X-Priority` | `info` / `warning` / `error` / `success`（也支持 ntfy 数值 1–5） |
+| `X-Actions` | 操作按钮，多段用 **`;`** 分隔，每段 **`名称,URL`** |
 
-详情短链：`GET /{short_url}`（在发布返回的 JSON 里）。
+成功响应示例：
+
+```json
+{"msg":"Success","code":200,"data":{...}}
+```
+
+#### 3.2 钉钉 / 飞书 / 企微机器人模式
+
+鉴权放在 URL 查询参数（Webhook 无法自定义请求头时使用）：
+
+```bash
+# 钉钉
+curl -X POST "https://你的域名/ops?type=dingding&authorization=你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"msgtype":"text","text":{"content":"备份完成\n数据库备份已成功"}}'
+
+# 飞书
+curl -X POST "https://你的域名/ops?type=feishu&authorization=你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"msg_type":"text","content":{"text":"备份完成\n数据库备份已成功"}}'
+
+# 企业微信机器人
+curl -X POST "https://你的域名/ops?type=wechat&authorization=你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"msgtype":"text","text":{"content":"备份完成\n数据库备份已成功"}}'
+```
+
+正文 **第一行作为标题**，其余为消息体（与钉钉/飞书习惯一致）。正文中的 URL 会自动提取为操作链接。
+
+#### 3.3 form / json 模式
+
+```bash
+# form
+curl -X POST "https://你的域名/ops?type=form&authorization=你的令牌" \
+  -d "title=备份完成&message=数据库备份已成功&priority=success"
+
+# json
+curl -X POST "https://你的域名/ops?type=json&authorization=你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"备份完成","message":"数据库备份已成功","priority":"success"}'
+```
+
+#### 3.4 后台代码示例
+
+**发布通知** 页可按模式切换 **cURL / 原始 HTTP / JavaScript / Go / Python / PHP** 示例，改字段即同步更新代码，直接复制使用。
+
+#### 3.5 查看通知详情
+
+- 后台 **通知列表** 按渠道筛选、查看历史
+- 短链：`GET /{short_url}`（发布成功响应 `data` 中的 `short_url` 字段）
+- 公开页：`GET /notify/{channel}` 查看某渠道的通知流
+
+### 4. 企业微信应用推送（可选）
+
+除 Webhook 入库外，还可把通知 **主动推送到企业微信成员**。
+
+**企业微信后台：**
+
+1. 记下 **企业 ID（corpid）**
+2. 自建应用：记下 **AgentId、Secret**，成员加入可见范围
+3. 添加回调：**URL `https://你的域名/hook`**，Token、`EncodingAESKey` 自定（须公网可访问）
+4. 发 API 的出口 IP 加入 **可信 IP**
+
+**Notify 后台 → 企业微信：**
+
+| 配置项 | 说明 |
+|--------|------|
+| `corpid` | 企业 ID |
+| `to_user` | 接收人 UserID，多个用 **\|** 分隔，填 `@all` 推全员 |
+| `token` / `aes_key` | 与回调配置一致 |
+
+**通知渠道** 中为每条渠道填写对应的 **`agent_id`、`secret`**。推送条件：全局 `to_user` 非空且该渠道两项均已配置；**收件人共用全局 `to_user`**。
+
+> 企微上游 API 失败时 HTTP 可能仍为 200，请看 JSON 里的 `code` / `msg`（或 `errcode` / `errmsg`）。
 
 ---
 
 ## 截图
 
-![img.png](img.png)
+### 通知渠道
 
-![img_5.png](img_5.png)
+创建与管理发布渠道，复制带 `type`、`authorization` 的 Webhook URL。
 
-![img_2.png](img_2.png)
+![通知渠道](img.png)
 
-![img_3.png](img_3.png)
+### 通知列表
 
-![img_1.png](img_1.png)
+按渠道查看历史通知，支持优先级标签与操作链接。
 
-**License：** MIT  
+![通知列表](img_1.png)
 
-开发辅助：`npm run build` / `test` / `fix`
+### 发布通知
+
+配置参数并生成 cURL / HTTP / JS / Go / Python / PHP 示例代码。
+
+![发布通知](img_2.png)
+
+### 企业微信
+
+配置 corpid、接收人、回调 Token / aesKey。
+
+![企业微信](img_3.png)
+
+### 角色管理
+
+RBAC 角色与权限配置。
+
+![角色管理](img_4.png)
+
+### 用户管理
+
+后台用户与角色分配。
+
+![用户管理](img_5.png)
+
+### 账户安全
+
+修改管理员密码。
+
+![账户安全](img_6.png)
+
+### 统一认证登录
+
+OIDC 单点登录配置。
+
+![统一认证登录](img_7.png)
+
+---
+
+## 开发
+
+```bash
+npm run build   # 构建前端资源
+npm run test    # 运行测试
+npm run fix     # PHP-CS-Fixer 格式化
+```
+
+**License：** MIT
