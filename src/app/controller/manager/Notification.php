@@ -8,8 +8,9 @@ use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
 use app\utils\Parsedown;
 use nova\framework\http\Response;
+use nova\plugin\login\controller\BaseAPIController;
 
-class Notification extends BaseController
+class Notification extends BaseAPIController
 {
     public function list(): Response
     {

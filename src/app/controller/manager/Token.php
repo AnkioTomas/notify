@@ -10,7 +10,9 @@ use nova\framework\http\Response;
 
 use function nova\framework\uuid;
 
-class Token extends BaseController
+use nova\plugin\login\controller\BaseAPIController;
+
+class Token extends BaseAPIController
 {
     protected ?string $token = null;
     public function init(): ?Response

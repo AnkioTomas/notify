@@ -8,7 +8,9 @@ use function nova\framework\config;
 
 use nova\framework\http\Response;
 
-class Wechat extends BaseController
+use nova\plugin\login\controller\BaseAPIController;
+
+class Wechat extends BaseAPIController
 {
     private const array FIELDS = ['corpid', 'to_user','token','aes_key'];
 

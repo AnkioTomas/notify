@@ -21,7 +21,7 @@ use nova\framework\route\Route;
 
 use nova\plugin\login\LoginTpl;
 
-use nova\plugin\login\route\PermissionRouter;
+use nova\plugin\login\route\Permission;
 
 class Application extends App
 {
@@ -40,6 +40,7 @@ class Application extends App
             ->get("/token/get", route("manager", "token", "get"))
             ->get("/token/reset", route("manager", "token", "reset"))
 
+            ->get("/channel", route("manager", "main", "channel"))
             ->get("/channel/list", route("manager", "channel", "list"))
             ->post("/channel/edit", route("manager", "channel", "edit"))
             ->post("/channel/del", route("manager", "channel", "del"))
@@ -56,15 +57,16 @@ class Application extends App
             ->get("/{short}", route("index", "short", "detail"))
         ;
 
-        PermissionRouter::getInstance()->registerPermissions('通知配置', "notify_manage", [
+        Permission::getInstance()->registerPermissions('通知配置', "notify_manage", [
             'ANY /token*',
-            'ANY /wechat*'
+            'ANY /wechat',
+            'ANY /wechat*',
+            'ANY /channel*'
         ]);
 
-        PermissionRouter::getInstance()->registerPermissions('只读通知', "notify_read", [
+        Permission::getInstance()->registerPermissions('只读通知', "notify_read", [
             'ANY /notify*',
             'ANY /notifications*',
-            'ANY /login/pwd'
         ]);
 
     }

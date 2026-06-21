@@ -7,8 +7,9 @@ namespace app\controller\manager;
 use app\database\dao\AppDao;
 use app\database\model\AppModel;
 use nova\framework\http\Response;
+use nova\plugin\login\controller\BaseAPIController;
 
-class Channel extends BaseController
+class Channel extends BaseAPIController
 {
     public function list(): Response
     {
