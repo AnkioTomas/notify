@@ -24,8 +24,8 @@ class NotificationModel extends Model
         'success' => '🟢',
     ];
 
-    /** 企业文本里同一行两个 action 之间的分隔（emoji） */
-    private const string WECHAT_ACTION_SEPARATOR = ' 🔹 ';
+    /** 企业文本里同一行两个 action 之间的分隔 */
+    private const string WECHAT_ACTION_SEPARATOR = ' | ';
 
     /**
      * 仅限制正文字段 `message` 的 UTF-8 字节长度。
@@ -119,50 +119,23 @@ EOF;
         return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-    public function emojiMarkdownToText($md): string
+    /**
+     * 将简易 Markdown 转为企微可读纯文本，弱化装饰、突出正文。
+     */
+    public function emojiMarkdownToText(string $md): string
     {
-        // 1. 标题 (使用极具仪式感的图标)
-        $md = preg_replace('/^# (.*)$/m', '📢 【 $1 】', $md);
-        $md = preg_replace('/^## (.*)$/m', '📌 $1', $md);
-        $md = preg_replace('/^### (.*)$/m', '🔹 $1', $md);
-
-        // 2. 强调 (加粗用火，斜体用闪亮)
-        $md = preg_replace('/\*\*(.*?)\*\*/', '🔥$1🔥', $md);
-        $md = preg_replace('/\*([^\*]+)\*/', '✨$1✨', $md);
-
-        // 3. 列表 (使用动感图标)
-        $md = preg_replace('/^\s*[\*\+-]\s+(.*)$/m', '✅ $1', $md);
-
-        // 4. 有序列表 (使用数字表情符号替换)
-        $md = preg_replace_callback('/^\s*(\d+)\.\s+(.*)$/m', function ($matches) {
-            $numMap = [
-                1 => '1️⃣', 2 => '2️⃣', 3 => '3️⃣', 4 => '4️⃣', 5 => '5️⃣',
-                6 => '6️⃣', 7 => '7️⃣', 8 => '8️⃣', 9 => '9️⃣', 0 => '0️⃣'
-            ];
-            $num = $matches[1];
-            $emojiNum = '';
-            foreach (str_split($num) as $digit) {
-                $emojiNum .= $numMap[$digit] ?? $digit;
-            }
-            return $emojiNum . ' ' . $matches[2];
-        }, $md);
-
-        // 5. 引用 (书本或扩音器效果)
-        $md = preg_replace('/^>\s?(.*)$/m', '📖 ❝ $1 ❞', $md);
-
-        // 6. 代码 (使用电脑或齿轮装饰)
-        $md = preg_replace('/`(.*?)`/', '💻『 $1 』', $md);
-
-        // 7. 分割线 (一串星星)
-        $md = preg_replace('/^---$/m', '──────────────', $md);
-
-        // 8. 链接与图片
-        $md = preg_replace('/\!\[(.*?)\]\((.*?)\)/', '🖼️ [图片: $1]', $md);
-        $md = preg_replace('/\[(.*?)\]\((.*?)\)/', '🔗 $1 ($2)', $md);
-
-        // 9. 任务列表 (针对 [ ] 和 [x])
-        $md = preg_replace('/- \[ \] (.*)/', '⬜ $1', $md);
-        $md = preg_replace('/- \[x\] (.*)/', '🧡 $1', $md);
+        $md = preg_replace('/^#{1,6}\s+(.*)$/m', '$1', $md);
+        $md = preg_replace('/\*\*(.+?)\*\*/s', '$1', $md);
+        $md = preg_replace('/(?<!\*)\*([^*]+)\*(?!\*)/', '$1', $md);
+        $md = preg_replace('/^\s*[\*+\-]\s+(.*)$/m', '· $1', $md);
+        $md = preg_replace('/^\s*(\d+)\.\s+(.*)$/m', '$1. $2', $md);
+        $md = preg_replace('/^>\s?(.*)$/m', '$1', $md);
+        $md = preg_replace('/`([^`]+)`/', '$1', $md);
+        $md = preg_replace('/^---+$/m', '──────────────', $md);
+        $md = preg_replace('/!\[(.*?)\]\((.*?)\)/', '[$1]', $md);
+        $md = preg_replace('/\[(.*?)\]\((.*?)\)/', '$1', $md);
+        $md = preg_replace('/-\s+\[\s\]\s+(.*)/', '○ $1', $md);
+        $md = preg_replace('/-\s+\[x\]\s+(.*)/i', '● $1', $md);
 
         return $md;
     }
