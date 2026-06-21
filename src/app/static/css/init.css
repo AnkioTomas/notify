@@ -22,30 +22,7 @@ mdui-top-app-bar,.layout-header-right {
         gap: calc(var(--gap) / 2);
     }
 }
-.layout-header-user-info{
-    display: flex;
-    align-items: center;
-    padding: 0.3rem 0.5rem;
-    height: 3.1rem;
-    box-sizing: border-box;
-    margin-right: 1.5rem;
 
-}
-.layout-header-user-info::part(button){
-    padding: 0;
-
-}
-
-
-.layout-header-user-info span{
-    margin-left: 0.4rem;
-    display: flex;
-    align-items: center;
-    color: rgba(var(--mdui-color-on-background));
-}
-.layout-header-user-info mdui-menu-item{
-    cursor: pointer;
-}
 .layout-main{
     height: calc(100vh);
 }

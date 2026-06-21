@@ -14,7 +14,7 @@ class Main extends BaseViewController
 {
     public function index(): Response
     {
-        return Response::asRedirect("/channel");
+        return Response::asRedirect($this->firstUri());
     }
 
     public function notifications(): Response
@@ -95,4 +95,5 @@ class Main extends BaseViewController
 
         ];
     }
+
 }
