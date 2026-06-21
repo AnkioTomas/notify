@@ -3,11 +3,11 @@ class NotifyCard extends HTMLElement {
         return ['priority', 'heading', 'channel', 'time', 'markdown', 'back-href', 'actions'];
     }
 
-    static #priorityMeta = {
-        info:    { label: '信息', icon: 'info',         cls: 'secondary' },
-        warning: { label: '警告', icon: 'warning',      cls: 'tertiary' },
-        error:   { label: '错误', icon: 'error',        cls: 'error' },
-        success: { label: '成功', icon: 'check_circle', cls: 'primary' },
+    static priorityMeta = {
+        info:    { label: '信息', icon: 'info',         tag: 'info' },
+        warning: { label: '警告', icon: 'warning',      tag: 'warning' },
+        error:   { label: '错误', icon: 'error',        tag: 'red' },
+        success: { label: '成功', icon: 'check_circle', tag: 'success' },
     };
 
     constructor() {
@@ -20,11 +20,11 @@ class NotifyCard extends HTMLElement {
     connectedCallback() {
         const tpl = this.querySelector('template[data-role="body"]');
         if (tpl) this._slot.body = tpl.innerHTML;
-        this.#paint();
+        this.paint();
     }
 
     attributeChangedCallback() {
-        if (this.isConnected) this.#paint();
+        if (this.isConnected) this.paint();
     }
 
     set priority(v) { this.setAttribute('priority', v); }
@@ -39,10 +39,10 @@ class NotifyCard extends HTMLElement {
     set time(v) { this.setAttribute('time', v); }
     get time()  { return this.getAttribute('time') || ''; }
 
-    set body(v) { this._p.body = v; if (this.isConnected) this.#paint(); }
+    set body(v) { this._p.body = v; if (this.isConnected) this.paint(); }
     get body()  { return this._p.body; }
 
-    set actions(v) { this._p.actions = v; if (this.isConnected) this.#paint(); }
+    set actions(v) { this._p.actions = v; if (this.isConnected) this.paint(); }
     get actions() {
         if (this._p.actions != null && typeof this._p.actions === 'object') return this._p.actions;
         const raw = this.getAttribute('actions')?.trim();
@@ -52,9 +52,20 @@ class NotifyCard extends HTMLElement {
         }
     }
 
-    #paint() {
-        const meta = NotifyCard.#priorityMeta[this.priority] || NotifyCard.#priorityMeta.info;
-        const cls = meta.cls;
+    static tagAccentCss() {
+        return Object.values(NotifyCard.priorityMeta)
+            .map(({ tag }) => `
+.notify-card[data-tag="${tag}"] .notify-status-badge {
+    background-color: rgb(var(--tag-${tag}-bg));
+    color: rgb(var(--tag-${tag}-fg));
+}
+`)
+            .join('');
+    }
+
+    paint() {
+        const meta = NotifyCard.priorityMeta[this.priority] || NotifyCard.priorityMeta.info;
+        const tag = meta.tag;
 
         const act = this.actions;
         const rows = act && typeof act === 'object' ? Object.entries(act) : [];
@@ -64,7 +75,7 @@ class NotifyCard extends HTMLElement {
                 : `<div class="notify-actions">${rows
                       .map(
                           ([label, href]) =>
-                              `<mdui-button class="notify-action-btn" variant="outlined" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
+                              `<mdui-button class="notify-action-btn" variant="filled" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
                       )
                       .join('')}</div>`;
 
@@ -97,23 +108,13 @@ class NotifyCard extends HTMLElement {
     box-sizing: border-box;
     width: 100%;
     max-width: none;
-    padding: 1rem 1rem 1rem 0.875rem;
-    border-left: 3px solid rgba(var(--mdui-color-outline-variant));
+    padding: 1rem;
+    border: none;
+    box-shadow: none;
     background: rgba(var(--mdui-color-surface-container-low));
 }
 
-.notify-card--primary {
-    border-left-color: rgba(var(--mdui-color-primary), 0.45);
-}
-.notify-card--secondary {
-    border-left-color: rgba(var(--mdui-color-secondary), 0.45);
-}
-.notify-card--tertiary {
-    border-left-color: rgba(var(--mdui-color-tertiary), 0.45);
-}
-.notify-card--error {
-    border-left-color: rgba(var(--mdui-color-error), 0.55);
-}
+${NotifyCard.tagAccentCss()}
 
 .notify-header {
     display: flex;
@@ -134,29 +135,11 @@ class NotifyCard extends HTMLElement {
     white-space: nowrap;
     font-weight: 500;
     border-radius: 9999px;
-    padding: 0.15rem 0.5rem;
+    padding: 0.25rem 0.5rem;
     font-size: var(--mdui-typescale-label-small-size);
     line-height: var(--mdui-typescale-label-small-line-height);
-    background: rgba(var(--mdui-color-surface-container));
-    color: rgba(var(--mdui-color-on-surface-variant));
-    border: 1px solid rgba(var(--mdui-color-outline-variant), 0.65);
-}
-
-.notify-status-badge--primary {
-    color: rgba(var(--mdui-color-primary));
-    border-color: rgba(var(--mdui-color-primary), 0.28);
-}
-.notify-status-badge--secondary {
-    color: rgba(var(--mdui-color-secondary));
-    border-color: rgba(var(--mdui-color-secondary), 0.28);
-}
-.notify-status-badge--tertiary {
-    color: rgba(var(--mdui-color-tertiary));
-    border-color: rgba(var(--mdui-color-tertiary), 0.28);
-}
-.notify-status-badge--error {
-    color: rgba(var(--mdui-color-error));
-    border-color: rgba(var(--mdui-color-error), 0.32);
+    border: none;
+    box-shadow: none;
 }
 
 .notify-title {
@@ -210,10 +193,11 @@ class NotifyCard extends HTMLElement {
 }
 
 .notify-body blockquote {
-    border-left: 3px solid rgba(var(--mdui-color-outline-variant));
     padding: 0.25rem 0.85rem;
     margin: 0.75rem 0;
     color: rgba(var(--mdui-color-on-surface-variant));
+    background: rgba(var(--mdui-color-surface-container), 0.6);
+    border-radius: 6px;
 }
 
 .notify-body table {
@@ -224,8 +208,17 @@ class NotifyCard extends HTMLElement {
 
 .notify-body td,
 .notify-body th {
-    border: 1px solid rgba(var(--mdui-color-outline-variant));
     padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid rgba(var(--mdui-color-outline-variant), 0.35);
+}
+
+.notify-body th {
+    border-bottom-width: 1px;
+    font-weight: 600;
+}
+
+.notify-body tr:last-child td {
+    border-bottom: none;
 }
 
 .notify-body hr {
@@ -253,14 +246,23 @@ class NotifyCard extends HTMLElement {
 .notify-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.875rem;
-    padding-top: 0.875rem;
-    border-top: 1px solid rgba(var(--mdui-color-outline-variant), 0.55);
+    gap: 0.25rem 0.5rem;
+    margin-top: 0.75rem;
 }
 
 .notify-action-btn {
     text-decoration: none;
+}
+
+.notify-action-btn::part(button) {
+    border: none;
+    box-shadow: none;
+    border-radius: 9999px;
+    min-height: 2rem;
+    padding-inline: 0.875rem;
+    font-weight: 500;
+    font-size: var(--mdui-typescale-label-large-size);
+    line-height: var(--mdui-typescale-label-large-line-height);
 }
 
 .notify-meta-item {
@@ -288,9 +290,9 @@ class NotifyCard extends HTMLElement {
 }
 
 </style>
-<mdui-card variant="outlined" class="notify-card notify-card--${cls}">
+<mdui-card variant="filled" class="notify-card" data-tag="${tag}">
     <div class="notify-header">
-        <span class="notify-status-badge notify-status-badge--${cls}"><mdui-icon name="${meta.icon}" class="notify-icon-sm"></mdui-icon>${meta.label}</span><div class="notify-header-spacer"></div>${channelLine}
+        <span class="notify-status-badge"><mdui-icon name="${meta.icon}" class="notify-icon-sm"></mdui-icon>${meta.label}</span><div class="notify-header-spacer"></div>${channelLine}
     </div>
     <h1 class="notify-title">${this.heading || '（无标题）'}</h1>
     <div class="notify-body">${bodyHtml}</div>
