@@ -9,12 +9,13 @@ use app\database\model\AppModel;
 
 use nova\framework\http\Response;
 use nova\plugin\login\controller\BaseViewController;
+use nova\plugin\tpl\Pjax;
 
 class Main extends BaseViewController
 {
     public function index(): Response
     {
-        return Response::asRedirect($this->firstUri());
+        return Pjax::redirectTo($this->firstUri());
     }
 
     public function notifications(): Response
