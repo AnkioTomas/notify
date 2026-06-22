@@ -77,7 +77,7 @@
 </div>
 
 <script>
-    let pjax = new PjaxUtils(true, function () {
+    let pjax = new PjaxUtils(function () {
 
     }, "/404");
     pjax.loadUri(window.location.pathname);
