@@ -37,3 +37,6 @@
 [submodule "src/app/static/components/dataTable"]
     path = src/app/static/components/dataTable
     url = https://github.com/NovaPHPOrgUI/dataTable
+[submodule "src/app/static/components/formDialog"]
+    path = src/app/static/components/formDialog
+    url = https://github.com/NovaPHPOrgUI/formDialog
