@@ -6,7 +6,6 @@ namespace app\controller\manager;
 
 use app\database\dao\AppDao;
 use app\database\model\AppModel;
-
 use nova\framework\http\Response;
 use nova\plugin\login\controller\BaseViewController;
 use nova\plugin\tpl\Pjax;

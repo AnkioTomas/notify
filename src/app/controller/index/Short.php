@@ -8,7 +8,6 @@ use app\Application;
 use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
 use app\utils\Parsedown;
-
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
 use nova\plugin\tpl\ViewResponse;

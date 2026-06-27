@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace app\controller\manager;
 
-use function nova\framework\config;
-
 use nova\framework\http\Response;
-
-use function nova\framework\uuid;
-
 use nova\plugin\login\controller\BaseAPIController;
+
+use function nova\framework\config;
+use function nova\framework\uuid;
 
 class Token extends BaseAPIController
 {

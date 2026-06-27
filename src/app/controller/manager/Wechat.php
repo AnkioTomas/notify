@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace app\controller\manager;
 
-use function nova\framework\config;
-
 use nova\framework\http\Response;
-
 use nova\plugin\login\controller\BaseAPIController;
+
+use function nova\framework\config;
 
 class Wechat extends BaseAPIController
 {

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace app\controller\index;
 
 use app\utils\WechatCrypt;
-
-use function nova\framework\config;
-
 use nova\framework\core\Logger;
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
+
+use function nova\framework\config;
 
 class Hook extends Controller
 {

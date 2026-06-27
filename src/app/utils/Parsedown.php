@@ -8,7 +8,7 @@ class Parsedown
 {
     # ~
 
-    const version = '1.8.0';
+    public const version = '1.8.0';
 
     # ~
 

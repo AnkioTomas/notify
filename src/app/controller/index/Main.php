@@ -9,13 +9,12 @@ use app\database\dao\NotificationDao;
 use app\database\model\NotificationModel;
 use app\utils\WechatException;
 use app\utils\WorkWechatApp;
-
-use function nova\framework\config;
-
 use nova\framework\http\Response;
 use nova\framework\json\Json;
 use nova\framework\json\JsonDecodeException;
 use nova\framework\route\Controller;
+
+use function nova\framework\config;
 
 class Main extends Controller
 {

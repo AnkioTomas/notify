@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace app\utils;
 
 use app\database\model\AppModel;
-
-use function nova\framework\config;
-
 use nova\framework\core\Context;
 use nova\framework\core\Instance;
 use nova\framework\json\Json;
 use nova\framework\json\JsonDecodeException;
 use nova\plugin\http\HttpClient;
 use nova\plugin\http\HttpException;
+
+use function nova\framework\config;
 
 class WorkWechatApp extends Instance
 {

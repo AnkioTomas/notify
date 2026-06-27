@@ -14,14 +14,11 @@ namespace app;
 
 use app\utils\Installer;
 use nova\framework\App;
+use nova\framework\route\Route;
+use nova\plugin\login\LoginTpl;
+use nova\plugin\login\route\Permission;
 
 use function nova\framework\route;
-
-use nova\framework\route\Route;
-
-use nova\plugin\login\LoginTpl;
-
-use nova\plugin\login\route\Permission;
 
 class Application extends App
 {

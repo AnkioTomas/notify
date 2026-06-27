@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace app\database\dao;
 
 use app\database\model\NotificationModel;
+use nova\plugin\orm\object\Dao;
 
 use function nova\framework\uuid;
-
-use nova\plugin\orm\object\Dao;
 
 class NotificationDao extends Dao
 {

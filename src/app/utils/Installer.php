@@ -7,23 +7,19 @@ namespace app\utils;
 use app\Application;
 use app\database\dao\AppDao;
 use app\database\dao\NotificationDao;
-
-use function nova\framework\config;
-
 use nova\framework\core\Context;
-
 use nova\framework\core\Logger;
 use nova\framework\event\EventManager;
 use nova\framework\exception\AppExitException;
 use nova\framework\http\Response;
-
-use function nova\framework\uuid;
-
 use nova\plugin\login\db\Dao\UserDao;
 use nova\plugin\tpl\ViewResponse;
 use PDO;
 use PDOException;
 use Throwable;
+
+use function nova\framework\config;
+use function nova\framework\uuid;
 
 /**
  * 首次安装向导。
