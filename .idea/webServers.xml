@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="d895030f-715a-4362-968d-c476c5244bb0" name="ssh" url="http://notify.ankio.net">
-        <fileTransfer rootFolder="/www/1panel/www/sites/notify.ankio.net/index" accessType="SFTP" host="43.165.166.25" port="22" sshConfigId="fba6485a-2806-4936-86c6-1ac80f4e9062" sshConfig="root@43.165.166.25:22 password">
+        <fileTransfer rootFolder="/www/1panel/www/sites/notify.ankio.net/index" accessType="SFTP" host="43.165.166.25" port="22" sshConfigId="fba6485a-2806-4936-86c6-1ac80f4e9062" sshConfig="root@43.165.166.25:22 key" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

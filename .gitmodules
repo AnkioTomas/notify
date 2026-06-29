@@ -25,9 +25,6 @@
 [submodule "src/nova/plugin/tpl"]
     path = src/nova/plugin/tpl
     url = https://github.com/NovaPHPOrg/nova-tpl
-[submodule "src/nova/plugin/ip"]
-    path = src/nova/plugin/ip
-    url = https://github.com/NovaPHPOrg/nova-ip
 [submodule "src/app/static/components/captcha"]
     path = src/app/static/components/captcha
     url = https://github.com/NovaPHPOrgUI/captcha.git
