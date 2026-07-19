@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace app;
 
-use app\utils\Installer;
 use nova\framework\App;
 use nova\framework\route\Route;
 use nova\plugin\login\LoginTpl;
@@ -24,7 +23,6 @@ class Application extends App
 {
     public function onFrameworkStart(): void
     {
-        Installer::register();
         LoginTpl::getInstance()->registerRouter('manager', 'main');
         Route::getInstance()
             // API 路由

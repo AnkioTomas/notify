@@ -21,6 +21,7 @@ return array (
   ),
   'framework_start' => 
   array (
+    0 => 'nova\\plugin\\installer\\InstallerManager',
     1 => 'nova\\plugin\\login\\LoginManager',
     2 => 'nova\\plugin\\tpl\\Handler',
   ),
