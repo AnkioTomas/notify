@@ -63,9 +63,15 @@ class NotifyCard extends HTMLElement {
             .join('');
     }
 
+    /** 输出边界转义；heading / body 来自 Markdown HTML，不在此二次转义 */
+    static esc(v) {
+        return $.escapeHtml(v == null ? '' : String(v));
+    }
+
     paint() {
         const meta = NotifyCard.priorityMeta[this.priority] || NotifyCard.priorityMeta.info;
         const tag = meta.tag;
+        const esc = NotifyCard.esc;
 
         const act = this.actions;
         const rows = act && typeof act === 'object' ? Object.entries(act) : [];
@@ -75,23 +81,24 @@ class NotifyCard extends HTMLElement {
                 : `<div class="notify-actions">${rows
                       .map(
                           ([label, href]) =>
-                              `<mdui-button class="notify-action-btn" variant="filled" href="${href}" target="_blank" rel="noopener noreferrer">${label}</mdui-button>`
+                              `<mdui-button class="notify-action-btn" variant="filled" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</mdui-button>`
                       )
                       .join('')}</div>`;
 
         const ch = this.channel;
         const channelLine = ch
-            ? `<span class="notify-meta-item notify-meta-item--channel"><mdui-icon name="forum" class="notify-icon-sm"></mdui-icon>${ch}</span>`
+            ? `<span class="notify-meta-item notify-meta-item--channel"><mdui-icon name="forum" class="notify-icon-sm"></mdui-icon>${esc(ch)}</span>`
             : '';
 
         const footerT = this.time
-            ? `<span class="notify-meta-item notify-meta-item--time"><mdui-icon name="schedule" class="notify-icon-sm"></mdui-icon>${this.time}</span>`
+            ? `<span class="notify-meta-item notify-meta-item--time"><mdui-icon name="schedule" class="notify-icon-sm"></mdui-icon>${esc(this.time)}</span>`
             : '';
         const footerHtml =
             footerT || ''
                 ? `<div class="notify-footer">${footerT}</div>`
                 : '';
 
+        // body：Markdown 渲染后的 HTML；heading：同理（属性侧由模板/调用方负责属性转义）
         const bodyHtml = this._p.body ?? this._slot.body ?? '';
 
         this.shadowRoot.innerHTML = `<style>

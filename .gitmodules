@@ -38,5 +38,5 @@
     path = src/app/static/components/formDialog
     url = https://github.com/NovaPHPOrgUI/formDialog
 [submodule "src/nova/plugin/installer"]
-	path = src/nova/plugin/installer
-	url = https://github.com/NovaPHPOrg/nova-installer
+    path = src/nova/plugin/installer
+    url = https://github.com/NovaPHPOrg/nova-installer

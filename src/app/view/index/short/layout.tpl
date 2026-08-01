@@ -50,11 +50,11 @@
     framework/utils/Timing.js,
     framework/utils/Form.js,
     framework/utils/Request.js,
+    framework/utils/Preloader.js,
     framework/theme/ThemeSwitcher.js,
     framework/language/NodeUtils.js,
     framework/language/TranslateUtils.js,
     framework/language/Language.js,
-    framework/pjax/pjax.min.js,
     framework/pjax/nprogress.js,
     framework/pjax/PjaxUtils.js,
     &type=js&v={$__v}"></script>
@@ -76,15 +76,20 @@
 
 </div>
 
+{if isset($__template_file) && $__template_file}
+<template id="page">{include file=$__template_file}</template>
+{/if}
+
+<script id="script"></script>
+{* 首屏 seed 同步消费：引导脚本必须排在全部锚点之后，否则报 missing #script *}
 <script>
     let pjax = new PjaxUtils(function () {
 
     }, "/404");
-    pjax.loadUri(window.location.pathname);
+    pjax.loadUri(window.location.pathname + window.location.search, { history: false });
     $("[data-pjax-item]").on("click", function () {
         pjax.loadUri($(this).data("href"));
     });
 </script>
-<script id="script"></script>
 </body>
 </html>

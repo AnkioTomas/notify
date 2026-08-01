@@ -4,6 +4,8 @@ window.pageLoadFiles = [
     "DialogForm",
 ];
 window.pageOnLoad = function (loading) {
+    const esc = (v) => $.escapeHtml(v == null ? '' : String(v));
+
     function initDataBase() {
         let database = new DataTable("#dataTable");
         database.load({
@@ -14,18 +16,21 @@ window.pageOnLoad = function (loading) {
                     name: "显示名称",
                     align: "center",
                     width: 140,
+                    formatter: (v) => esc(v),
                 },
                 {
                     field: "short_name",
                     name: "短标识",
                     align: "center",
                     width: 140,
+                    formatter: (v) => esc(v),
                 },
                 {
                     field: "agent_id",
                     name: "AgentId",
                     align: "center",
                     width: 120,
+                    formatter: (v) => esc(v),
                 },
                 {
                     field: "id",

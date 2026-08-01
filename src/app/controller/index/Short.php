@@ -46,7 +46,13 @@ class Short extends Controller
 
         $pageTitle = ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME;
 
-        $payload = [
+        $view = new ViewResponse();
+        // 非 PJAX 套 layout（子页进 <template id="page">）；PJAX 只出片段。页面始终由本 action 渲染。
+        $view->init($this->request->isPjax() ? '' : 'layout', [
+            'title' => $pageTitle,
+        ]);
+
+        return $view->asTpl('detail', [
             'title'           => $pageTitle,
             'heading'         => $model->title !== '' ? $parsedown->text($model->title) : '（无标题）',
             'channel'         => $app?->name ?? '未知频道',
@@ -54,16 +60,6 @@ class Short extends Controller
             'time'            => $model->t > 0 ? date('Y-m-d H:i:s', $model->t) : '',
             'bodyHtml'        => $bodyHtml,
             'actionsEncoded'  => $actionsEncoded,
-        ];
-
-        $view = new ViewResponse();
-
-        if ($this->request->isPjax()) {
-            return $view->asTpl('detail', $payload);
-        }
-
-        return $view->asTpl('layout', [
-            'title' => $pageTitle,
         ]);
     }
 }

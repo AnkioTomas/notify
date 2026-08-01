@@ -40,11 +40,6 @@ class NotificationModel extends Model
         return ['short_url'];
     }
 
-    public function getNoEscape(): array
-    {
-        return ["message"];
-    }
-
     public function toWechat(): string
     {
         $messageBody = $this->truncateMessageBodyForWechat($this->message);
@@ -112,11 +107,6 @@ EOF;
     private function viewUrl(): string
     {
         return Context::instance()->request()->getBasicAddress() . '/' . $this->short_url;
-    }
-
-    private function escape(string $s): string
-    {
-        return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     /**

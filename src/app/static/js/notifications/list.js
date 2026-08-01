@@ -3,11 +3,10 @@
  */
 window.pageLoadFiles = ['Form', 'CardView', 'js/notify/NotifyCard.js'];
 
-
-
 window.pageOnLoad = function () {
     let cv = null;
 
+    const esc = (v) => $.escapeHtml(v == null ? '' : String(v));
 
     function initCardView() {
         cv = new CardView('#notificationsRoot');
@@ -26,11 +25,15 @@ window.pageOnLoad = function () {
                 </notify-card>
             </div>`,
             columns: [
-                { field: 'title', name: '标题' },
-                { field: 'priority', name: '优先级' },
-                { field: 'channel', name: '频道' },
-                { field: 'time', name: '时间' },
-                { field: 'detailHref', name: '链接' },
+                // title / messageHtml 为 Markdown HTML：属性位只做属性转义，正文保持 HTML
+                { field: 'title', name: '标题', formatter: (v) => esc(v) },
+                { field: 'priority', name: '优先级', formatter: (v) => esc(v) },
+                { field: 'channel', name: '频道', formatter: (v) => esc(v) },
+                { field: 'time', name: '时间', formatter: (v) => esc(v) },
+                { field: 'actionsEncoded', name: '操作', formatter: (v) => esc(v) },
+                { field: 'detailHref', name: '链接', formatter: (v) => esc(v) },
+                // messageHtml 故意不转义：Parsedown 输出
+                { field: 'messageHtml', name: '正文' },
             ],
             selectable: false,
             cardWidth: '720px',
