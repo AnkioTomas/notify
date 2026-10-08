@@ -594,6 +594,19 @@ file_get_contents(${JSON.stringify(st.url)}, false, stream_context_create([
         $.toaster.success('已复制令牌');
     });
 
+    $('#copyMcpBtn').on('click', () => {
+        const config = {
+            mcpServers: {
+                notify: {
+                    url: `${normBase(ELS.base.value)}/mcp`,
+                    headers: { Authorization: String(ELS.token.value || '') },
+                },
+            },
+        };
+        $.copy(JSON.stringify(config, null, 2));
+        $.toaster.success('已复制 MCP 配置，粘贴到客户端的 mcp.json');
+    });
+
     $('#resetBtn').on('click', () => {
         $.request.get('/token/reset', {}, () => {
             loadToken();

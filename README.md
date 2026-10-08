@@ -192,7 +192,7 @@ curl -X POST "https://你的域名/ops?type=json&authorization=你的令牌" \
 
 鉴权与发布接口共用 **Authorization 令牌**（请求头，可带 `Bearer ` 前缀；或 `?authorization=` 查询参数）。
 
-以 Cursor 为例（`~/.cursor/mcp.json`）：
+后台 **发布通知 → 复制 MCP 配置** 可直接复制下面这段（已填好域名和令牌）。以 Cursor 为例（`~/.cursor/mcp.json`）：
 
 ```json
 {

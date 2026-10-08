@@ -117,6 +117,7 @@
                 <div class="token-auth-row">
                     <mdui-text-field id="pubToken" label="令牌" readonly></mdui-text-field>
                     <mdui-button id="copyTokenBtn" variant="outlined" icon="key">复制令牌</mdui-button>
+                    <mdui-button id="copyMcpBtn" variant="outlined" icon="smart_toy">复制 MCP 配置</mdui-button>
                     <mdui-button id="resetBtn" variant="tonal" icon="lock_reset">重置令牌</mdui-button>
                 </div>
             </section>
