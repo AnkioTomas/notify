@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\utils;
 
 use app\database\model\AppModel;
+use app\database\model\NotificationModel;
 use nova\framework\core\Context;
 use nova\framework\core\Instance;
 use nova\framework\json\Json;
@@ -77,6 +78,22 @@ class WorkWechatApp extends Instance
             "enable_duplicate_check"   => 0,
             "duplicate_check_interval" => 1800,
         ]);
+    }
+
+    /**
+     * 全局 to_user 非空且渠道配置了 agent_id、secret 时推送，否则跳过。
+     *
+     * @throws WechatException
+     * @throws HttpException
+     * @throws JsonDecodeException
+     */
+    public static function push(AppModel $app, NotificationModel $model): void
+    {
+        $toUser = config('work_wechat.to_user');
+        if (empty($toUser) || $app->secret === '' || $app->agent_id === '') {
+            return;
+        }
+        self::getInstance($app)->sendText($model->toWechat(), $toUser);
     }
 
     /**

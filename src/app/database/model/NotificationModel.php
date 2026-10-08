@@ -104,7 +104,7 @@ EOF;
         return self::PRIORITY_EMOJI[$this->priority] ?? self::PRIORITY_EMOJI['info'];
     }
 
-    private function viewUrl(): string
+    public function viewUrl(): string
     {
         return Context::instance()->request()->getBasicAddress() . '/' . $this->short_url;
     }

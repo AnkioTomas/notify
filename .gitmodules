@@ -40,3 +40,6 @@
 [submodule "src/nova/plugin/installer"]
     path = src/nova/plugin/installer
     url = https://github.com/NovaPHPOrg/nova-installer
+[submodule "src/nova/plugin/mcp"]
+	path = src/nova/plugin/mcp
+	url = https://github.com/NovaPHPOrg/nova-mcp

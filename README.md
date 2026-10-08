@@ -186,6 +186,27 @@ curl -X POST "https://你的域名/ops?type=json&authorization=你的令牌" \
 
 > 企微上游 API 失败时 HTTP 可能仍为 200，请看 JSON 里的 `code` / `msg`（或 `errcode` / `errmsg`）。
 
+### 5. 让 AI 通知你（MCP）
+
+`/mcp` 是一个 MCP 服务器（Streamable HTTP），提供 `send_notification` 工具，并在初始化时告诉 AI 什么时候该通知、怎么写通知。耗时任务结束、需要你拍板时，AI 会主动推送到通知中心和企业微信。
+
+鉴权与发布接口共用 **Authorization 令牌**（请求头，可带 `Bearer ` 前缀；或 `?authorization=` 查询参数）。
+
+以 Cursor 为例（`~/.cursor/mcp.json`）：
+
+```json
+{
+  "mcpServers": {
+    "notify": {
+      "url": "https://你的域名/mcp",
+      "headers": { "Authorization": "你的令牌" }
+    }
+  }
+}
+```
+
+> 已有短标识为 `mcp` 的渠道会被该路由遮蔽，请改用其他短标识。
+
 ---
 
 ## 截图

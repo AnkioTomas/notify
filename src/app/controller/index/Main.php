@@ -64,16 +64,11 @@ class Main extends Controller
 
         $model = NotificationDao::getInstance()->post($model);
 
-        // 发布到微信
-
-        $toUser = config('work_wechat.to_user');
-        if (!empty($toUser) && $app->secret !== '' && $app->agent_id !== '') {
-            try {
-                WorkWechatApp::getInstance($app)->sendText($model->toWechat(), $toUser);
-            } catch (WechatException $e) {
-                // 企微上游 API 常为 HTTP 200 + errcode≠0；这里对各 type 继续用语义化 body（见 publishErrorResponse）
-                return $this->publishErrorResponse($type, 200, $e->getMessage(), $e->getCode() ?: 500);
-            }
+        try {
+            WorkWechatApp::push($app, $model);
+        } catch (WechatException $e) {
+            // 企微上游 API 常为 HTTP 200 + errcode≠0；这里对各 type 继续用语义化 body（见 publishErrorResponse）
+            return $this->publishErrorResponse($type, 200, $e->getMessage(), $e->getCode() ?: 500);
         }
 
         return $this->publishSuccessResponse($type, $model);
