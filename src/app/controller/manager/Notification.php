@@ -33,15 +33,12 @@ class Notification extends BaseAPIController
         );
         $appDao = AppDao::getInstance();
         $parsedown = new Parsedown();
-        $parsedown->setBreaksEnabled(true);
+        $parsedown->setBreaksEnabled(true)->setSafeMode(true);
 
         $data = [];
         foreach ($result['data'] as $model) {
             $app = $appDao->id($model->app);
-            $actions = $model->actions ?? [];
-            if (!is_array($actions)) {
-                $actions = [];
-            }
+            $actions = $model->safeActions();
 
             $messageHtml = $model->message !== ''
                 ? $parsedown->text($model->message)

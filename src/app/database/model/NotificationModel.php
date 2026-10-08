@@ -40,6 +40,12 @@ class NotificationModel extends Model
         return ['short_url'];
     }
 
+    /** 只放行 http(s) 链接，挡住 javascript: 等伪协议 */
+    public function safeActions(): array
+    {
+        return array_filter($this->actions, fn ($url) => is_string($url) && preg_match('#^https?://#i', $url) === 1);
+    }
+
     public function toWechat(): string
     {
         $messageBody = $this->truncateMessageBodyForWechat($this->message);

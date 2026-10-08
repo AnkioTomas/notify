@@ -42,13 +42,13 @@ class Short extends Controller
         $app = AppDao::getInstance()->id($model->app);
 
         $parsedown = new Parsedown();
-        $parsedown->setBreaksEnabled(true);
+        $parsedown->setBreaksEnabled(true)->setSafeMode(true);
 
         $bodyHtml = $model->message !== ''
             ? $parsedown->text($model->message)
             : '';
 
-        $actions = $model->actions ?? [];
+        $actions = $model->safeActions();
         if ($actions !== []) {
             $json = json_encode($actions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
             $actionsEncoded = $json !== false ? rawurlencode($json) : '';
