@@ -17,6 +17,18 @@ use nova\plugin\tpl\ViewResponse;
  */
 class Short extends Controller
 {
+    protected ViewResponse $viewResponse;
+
+    public function init(): ?Response
+    {
+        $ret = parent::init();
+        if ($ret) {
+            return $ret;
+        }
+        $this->viewResponse = new ViewResponse();
+        return null;
+    }
+
     /**
      * GET /{short}
      */
@@ -46,13 +58,12 @@ class Short extends Controller
 
         $pageTitle = ($model->title !== '' ? $model->title : '通知详情') . ' - ' . Application::SYSTEM_NAME;
 
-        $view = new ViewResponse();
-        // 非 PJAX 套 layout（子页进 <template id="page">）；PJAX 只出片段。页面始终由本 action 渲染。
-        $view->init($this->request->isPjax() ? '' : 'layout', [
+        // 非 PJAX 套 layout（子页进 <article id="page" hidden>）；PJAX 只出片段。
+        $this->viewResponse->init($this->request->isPjax() ? '' : 'layout', [
             'title' => $pageTitle,
         ]);
 
-        return $view->asTpl('detail', [
+        return $this->viewResponse->asTpl('detail', [
             'title'           => $pageTitle,
             'heading'         => $model->title !== '' ? $parsedown->text($model->title) : '（无标题）',
             'channel'         => $app?->name ?? '未知频道',
