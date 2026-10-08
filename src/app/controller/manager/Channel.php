@@ -42,7 +42,18 @@ class Channel extends BaseAPIController
     public function edit(): Response
     {
         $app = new AppModel($_POST);
-        AppDao::getInstance()->insertModel($app, true);
+        $dao = AppDao::getInstance();
+
+        $owner = $dao->shortName($app->short_name);
+        if ($owner !== null && $owner->id !== $app->id) {
+            return Response::asJson(['code' => 400, 'msg' => "短标识 {$app->short_name} 已被渠道「{$owner->name}」使用"]);
+        }
+
+        if ($app->id > 0) {
+            $dao->updateModel($app);
+        } else {
+            $dao->insertModel($app);
+        }
         return Response::asJson([
             'code' => 200,
             'msg' => '操作成功'
