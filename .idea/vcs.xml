@@ -14,6 +14,7 @@
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/http" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/installer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/login" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/nova/plugin/mcp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/orm" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/nova/plugin/tpl" vcs="Git" />
   </component>
