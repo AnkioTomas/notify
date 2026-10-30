@@ -38,7 +38,7 @@
                 <mdui-text-field
                         name="to_user"
                         label="接收人 UserID（多个用 | 分隔，填 @all 推送给全员）"
-                        helper="应用 Secret / AgentId 在“通知渠道”里按渠道单独配置"
+                        helper="应用 Secret / AgentId 在“通知渠道”里按渠道单独配置；同步应用请到通知渠道操作列"
                         variant="outlined"
                         clearable
                         required

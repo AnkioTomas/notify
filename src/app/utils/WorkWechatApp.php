@@ -13,8 +13,6 @@ use nova\framework\json\JsonDecodeException;
 use nova\plugin\http\HttpClient;
 use nova\plugin\http\HttpException;
 
-use function nova\framework\config;
-
 class WorkWechatApp extends Instance
 {
     private const string BASE = 'https://qyapi.weixin.qq.com/';
@@ -41,7 +39,7 @@ class WorkWechatApp extends Instance
             return $hit;
         }
 
-        $corpId = config('work_wechat.corpid') ?? '';
+        $corpId = Work_wechatConfig::getInstance()->corpid;
         if ($corpId === '' || $this->app->secret === '') {
             throw new WechatException("企业微信凭证缺失：work_wechat.corpid 或 应用[{$this->app->short_name}]的 secret 未配置");
         }
@@ -89,8 +87,8 @@ class WorkWechatApp extends Instance
      */
     public static function push(AppModel $app, NotificationModel $model): void
     {
-        $toUser = config('work_wechat.to_user');
-        if (empty($toUser) || $app->secret === '' || $app->agent_id === '') {
+        $toUser = Work_wechatConfig::getInstance()->to_user;
+        if ($toUser === '' || $app->secret === '' || $app->agent_id === '') {
             return;
         }
         self::getInstance($app)->sendText($model->toWechat(), $toUser);

@@ -9,9 +9,10 @@ use Throwable;
 
 class WechatException extends \Exception
 {
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        Logger::error($message, $this->getTrace());
+        // 传 $this，让 Logger 按 Throwable 格式化；禁止塞 getTrace() 当 context（args 里一堆不可 print 的东西）
+        Logger::error($this);
     }
 }

@@ -45,6 +45,12 @@ class Application extends App
 
             ->get("/wechat", route("manager", "main", "wechat"))
             ->getOrPost("/wechat/config", route("manager", "wechat", "config"))
+            ->post("/wechat/qr/begin", route("manager", "wechat", "qrBegin"))
+            ->post("/wechat/qr/poll", route("manager", "wechat", "qrPoll"))
+            ->post("/wechat/qr/captcha", route("manager", "wechat", "qrCaptcha"))
+            ->post("/wechat/qr/end", route("manager", "wechat", "qrEnd"))
+            ->post("/wechat/session", route("manager", "wechat", "session"))
+            ->post("/wechat/sync", route("manager", "wechat", "sync"))
 
             ->getOrPost("/hook", route("index", "hook", "index"))
             ->getOrPost("/mcp", route("index", "mcp", "handleMcpRequest"))

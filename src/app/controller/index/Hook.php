@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace app\controller\index;
 
 use app\utils\WechatCrypt;
+use app\utils\Work_wechatConfig;
 use nova\framework\core\Logger;
 use nova\framework\http\Response;
 use nova\framework\route\Controller;
-
-use function nova\framework\config;
 
 class Hook extends Controller
 {
@@ -20,13 +19,8 @@ class Hook extends Controller
      */
     public function index(): Response
     {
-        $token = config("work_wechat.token");
-
-        $aes_key = config("work_wechat.aes_key");
-
-        $corpid = config("work_wechat.corpid");
-
-        $crypt = new WechatCrypt($token, $aes_key, $corpid);
+        $cfg = Work_wechatConfig::getInstance();
+        $crypt = new WechatCrypt($cfg->token, $cfg->aes_key, $cfg->corpid);
 
         $sig = $this->request->get('msg_signature', '');
         $ts = $this->request->get('timestamp', '');
