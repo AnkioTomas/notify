@@ -35,7 +35,7 @@ class Main extends Controller
 
         $authorization = $headers['Authorization'] ?? $this->request->arg('authorization') ?? null;
 
-        if (strlen($authorization) <= 6 || config('authorization') !== $authorization) {
+        if (!is_string($authorization) || strlen($authorization) <= 6 || config('authorization') !== $authorization) {
             return $this->publishErrorResponse($type, 403, 'Unauthorized', 403);
         }
         // 校验授权
