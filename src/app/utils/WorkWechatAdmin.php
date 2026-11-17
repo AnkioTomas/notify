@@ -181,7 +181,7 @@ class WorkWechatAdmin
             'english_name'        => '',
             'english_description' => '',
             'app_open'            => 'true',
-            'logoimage'           => self::logoPayload($logo),
+            'logoimage'           => $admin->uploadLogo($logo),
             'visible_pid[]'       => $root,
         ]))['data'] ?? [];
         if (empty($data['app_id'])) {
@@ -204,33 +204,104 @@ class WorkWechatAdmin
     {
         $admin = self::open($key, true);
         $fields = [
-            'app_id'      => $appId,
-            'name'        => $name,
-            'description' => '',
-            'app_open'    => 'true',
+            'name'                => $name,
+            'description'         => '',
+            'english_name'        => '',
+            'english_description' => '',
+            'app_id'              => $appId,
+            'app_open'            => '1',
+            'visible_pid[]'       => self::rootPartyId($admin),
         ];
         if ($logo !== '') {
-            $fields['logoimage'] = self::logoPayload($logo);
+            $fields['logoimage'] = $admin->uploadLogo($logo);
         }
         $resp = $admin->json('apps/saveOpenApiApp', [], self::form($fields));
         $err = $resp['result']['errCode'] ?? 0;
         if ($err !== 0) {
+            Logger::error('企微更新应用失败：' . json_encode($resp['result'] ?? [], JSON_UNESCAPED_UNICODE));
             throw new WechatException($resp['result']['humanMessage'] ?? '更新企业微信应用失败', (int)$err);
         }
     }
 
-    /** data URL / 纯 base64 → 企微 logoimage 字段要的纯 base64 */
-    private static function logoPayload(string $logo): string
+    /**
+     * 图标先传到企微 uploadImage（iframe 回调页），再把返回的图片 URL 作为 logoimage 提交。
+     * 已经是 http(s) URL 的直接沿用；空图标返回空串（用企微默认）。
+     *
+     * @param string $logo data URL / 纯 base64 / URL
+     * @throws WechatException
+     */
+    private function uploadLogo(string $logo): string
     {
         $logo = trim($logo);
-        if ($logo === '') {
-            return '';
+        if ($logo === '' || preg_match('#^https?://#i', $logo)) {
+            return $logo;
         }
         if (preg_match('/^data:image\/[a-zA-Z0-9+.-]+;base64,(.+)$/s', $logo, $m)) {
-            return $m[1];
+            $logo = $m[1];
+        }
+        $png = base64_decode(self::normalizeLogo($logo), true);
+        if ($png === false || $png === '') {
+            throw new WechatException('应用图标无法解析');
+        }
+        $info = getimagesizefromstring($png);
+        $w = (string)($info[0] ?? 600);
+        $h = (string)($info[1] ?? 600);
+
+        $boundary = '----NotifyBoundary' . bin2hex(random_bytes(8));
+        $fields = [
+            'file_path' => '', 'target_vid' => '', 'crop_left' => '0', '_d2st' => '',
+            'crop_top' => '0', 'crop_width' => $w, 'crop_height' => $h, 'degree' => '0',
+            'img_width' => $w, 'img_height' => $h, 'type' => 'IMG_ICO',
+        ];
+        $body = "--$boundary\r\nContent-Disposition: form-data; name=\"uploadImageFile\"; filename=\"logo.png\"\r\n"
+            . "Content-Type: image/png\r\n\r\n" . $png . "\r\n";
+        foreach ($fields as $name => $value) {
+            $body .= "--$boundary\r\nContent-Disposition: form-data; name=\"$name\"\r\n\r\n$value\r\n";
+        }
+        $body .= "--$boundary--\r\n";
+
+        $callback = 'uploadLogoImageCallback' . (int)(microtime(true) * 1000);
+        [, $out] = $this->http(
+            self::BASE . 'uploadImage?callback=' . $callback,
+            false,
+            $body,
+            30,
+            false,
+            'multipart/form-data; boundary=' . $boundary
+        );
+        if (!preg_match('/src:\s*"(https?:[^"]+)"/', $out, $m)) {
+            Logger::error('企微图标上传失败：' . substr($out, 0, 300));
+            throw new WechatException('上传应用图标失败，登录可能已失效或图片不被接受');
         }
 
-        return $logo;
+        return $m[1];
+    }
+
+    /** 企微只收正方形、体积适中的 PNG/JPG；GD 不可用或解码失败时原样返回 */
+    private static function normalizeLogo(string $base64): string
+    {
+        if (!function_exists('imagecreatefromstring')) {
+            return $base64;
+        }
+        $bin = base64_decode($base64, true);
+        $src = $bin === false ? false : @imagecreatefromstring($bin);
+        if ($src === false) {
+            return $base64;
+        }
+        $size = 600;
+        $w = imagesx($src);
+        $h = imagesy($src);
+        $side = min($w, $h);
+        $dst = imagecreatetruecolor($size, $size);
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+        imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 255, 255, 255, 127));
+        imagecopyresampled($dst, $src, 0, 0, intdiv($w - $side, 2), intdiv($h - $side, 2), $size, $size, $side, $side);
+        ob_start();
+        imagepng($dst);
+        $png = (string)ob_get_clean();
+
+        return base64_encode($png);
     }
 
     /**
