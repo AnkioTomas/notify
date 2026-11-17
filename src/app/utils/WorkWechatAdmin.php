@@ -315,6 +315,51 @@ class WorkWechatAdmin
     }
 
     /**
+     * 把本服务出口 IPv4 写入应用「企业可信 IP」，否则企微 API 会因 IP 不在白名单而拒绝。
+     * 该接口按列表整体保存。
+     *
+     * @throws WechatException
+     */
+    public static function saveTrustedIp(string $key, string $appId): string
+    {
+        $ip = self::publicIp();
+        $admin = self::open($key, true);
+        $resp = $admin->json('apps/saveIpConfig', [], self::form([
+            'app_id'   => $appId,
+            'ipList[]' => $ip,
+        ]));
+        $err = $resp['result']['errCode'] ?? 0;
+        if ($err !== 0) {
+            throw new WechatException($resp['result']['humanMessage'] ?? '配置可信 IP 失败', (int)$err);
+        }
+
+        return $ip;
+    }
+
+    /**
+     * @throws WechatException
+     */
+    private static function publicIp(): string
+    {
+        foreach (['https://4.ipw.cn', 'https://api.ipify.org', 'https://ipv4.icanhazip.com'] as $url) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 5,
+                CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
+            ]);
+            $out = curl_exec($ch);
+            curl_close($ch);
+            $ip = is_string($out) ? trim($out) : '';
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                return $ip;
+            }
+        }
+
+        throw new WechatException('无法获取服务器公网 IP');
+    }
+
+    /**
      * 触发「查看 Secret」：向管理员企业微信客户端推送密钥查看消息。
      *
      * @throws WechatException

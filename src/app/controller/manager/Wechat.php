@@ -168,6 +168,12 @@ class Wechat extends BaseAPIController
             }
 
             try {
+                WorkWechatAdmin::saveTrustedIp($key, $remote['app_id']);
+            } catch (WechatException $e) {
+                $warning = trim($warning . ' 可信 IP 未配置成功：' . $e->getMessage());
+            }
+
+            try {
                 WorkWechatAdmin::sendSecret($key, $remote['app_id']);
             } catch (WechatException $e) {
                 $warning = trim($warning . ' Secret 未触发：' . $e->getMessage());
